@@ -556,7 +556,7 @@ export default function LustBreaker({ onBack, onAscend }) {
             <button 
               className="mt-6 px-12 py-5 bg-[#38bdf8]/20 border border-[#38bdf8] rounded-full text-white font-black tracking-[0.4em] uppercase text-sm md:text-base hover:bg-[#38bdf8] hover:text-[#020617] transition-all shadow-[0_0_40px_rgba(56,189,248,0.6)] cursor-pointer"
               onClick={() => {
-                alert("Vow locked into the Akashic Records. Exposing the Matrix...");
+                
                 if (onAscend) onAscend(); // 👈 This triggers the teleport!
               }}
             >
