@@ -8,7 +8,7 @@ import CosmicHub from './components/CosmicHub';
 export default function App() {
   const [view, setView] = useState('intro');
   const [guide, setGuide] = useState(null); 
-  const [skipIntro, setSkipIntro] = useState(false); // 🔥 NEW: Remembers if they already watched it!
+  const [skipIntro, setSkipIntro] = useState(false); // 🔥 Remembers if they already watched it!
 
   // The Master Scroll Engine
   useEffect(() => {
@@ -28,18 +28,28 @@ export default function App() {
     setView('intro');
   };
 
+  // 🚀 ✨ THE NEW MAGIC TELEPORT FUNCTION
+  const handleSkipToAvatars = () => {
+    setGuide('vishnu'); // Force the guide to Vishnu so the Hub allows entry
+    setView('hub');     // Teleport straight to the Cosmic Hub
+  };
+
   return (
     <div className="w-full min-h-screen bg-[#010101] text-white selection:bg-[#fbbf24]/30">
       
-      {/* Pass the startAtBottom prop! */}
+      {/* Pass the startAtBottom AND our new onSkipToAvatars prop! */}
       {view === 'intro' && (
-        <IntroSequence onUnlock={handleUnlock} startAtBottom={skipIntro} />
+        <IntroSequence 
+          onUnlock={handleUnlock} 
+          startAtBottom={skipIntro} 
+          onSkipToAvatars={handleSkipToAvatars} // 👈 Passed down to the VIP button!
+        />
       )}
 
       {view === 'showcase' && guide && (
         <WeaponShowcase 
           guide={guide} 
-          onBack={handleBackToSelection} // Trigger the smart back button
+          onBack={handleBackToSelection} 
           onEnterHub={() => setView('hub')}
         />
       )}

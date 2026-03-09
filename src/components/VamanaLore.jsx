@@ -122,7 +122,7 @@ export default function VamanaLore({ onBack }) {
   const driftRight = (start, end) => useTransform(sp, [start, end], ["-5vw", "5vw"]);
 
   return (
-    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[1400vh] font-sans">
+    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[2000vh] font-sans">
       
       <button onClick={onBack} className="fixed top-6 left-6 z-[100] px-6 py-2 border border-current rounded-full text-xs tracking-widest uppercase hover:opacity-50 transition-all mix-blend-difference text-white shadow-lg">
         &larr; Exit Domain

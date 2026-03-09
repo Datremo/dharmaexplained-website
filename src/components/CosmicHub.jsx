@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial, Icosahedron, Torus, TorusKnot, Sphere, Cone, Octahedron, Image } from '@react-three/drei';import { motion, useScroll, useSpring, useTransform, useVelocity, AnimatePresence, useInView } from 'framer-motion';
-import VamanaLore from './VamanaLore'; // Adjust the path if it's in a different folder!
-import MatsyaLore from './MatsyaLore'; // 👈 Add this line!
+import { Points, PointMaterial, Icosahedron, Torus, TorusKnot, Sphere, Cone, Octahedron, Image } from '@react-three/drei';
+import { motion, useScroll, useSpring, useTransform, useVelocity, AnimatePresence, useInView } from 'framer-motion';
+import VamanaLore from './VamanaLore'; 
+import MatsyaLore from './MatsyaLore'; 
 import KurmaLore from './KurmaLore';
 import VarahaLore from './VarahaLore';
 import NarasimhaLore from './NarasimhaLore';
 import { EffectComposer, Bloom, Vignette, Glitch } from '@react-three/postprocessing';
 import * as THREE from 'three';
-
+import LustBreaker from './LustBreaker';
+import MayaProtocol from './MayaProtocol';
+import KarmaProtocol from './KarmaProtocol';
 // --------------------------------------------------------
 // 📜 THE LORE DATA
 // --------------------------------------------------------
@@ -84,7 +87,6 @@ const OceanOfMilk = ({ scrollVelocity, journeyPhase }) => {
     return { positions: pos, randoms: rand };
   }, []);
 
-
   const uniforms = useMemo(() => ({
     uTime: { value: 0 }, uSpeed: { value: 0 }, uDissolve: { value: 0 }, uColor: { value: new THREE.Color("#00ccff") }
   }), []);
@@ -100,7 +102,6 @@ const OceanOfMilk = ({ scrollVelocity, journeyPhase }) => {
     <points ref={pointsRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -8, -10]}>
      <bufferGeometry ref={geoRef}>
         <bufferAttribute attach="attributes-position" count={positions.length / 3} array={positions} itemSize={3} />
-        {/* Add the randoms inline here! */}
         <bufferAttribute attach="attributes-aRandom" count={randoms.length / 3} array={randoms} itemSize={3} />
       </bufferGeometry>
       <shaderMaterial transparent blending={THREE.AdditiveBlending} depthWrite={false} uniforms={uniforms}
@@ -212,12 +213,11 @@ const MokshaCore = ({ isHolding, onAwaken, journeyPhase }) => {
     }
 
     if (isHolding) {
-      progress.current += delta * 0.3; // 3 seconds to Moksha
+      progress.current += delta * 0.3; 
       if (navigator.vibrate && Math.random() > 0.8) navigator.vibrate(50);
       state.camera.position.x = Math.sin(state.clock.elapsedTime * 40) * progress.current * 0.1;
       state.camera.position.y = Math.cos(state.clock.elapsedTime * 45) * progress.current * 0.1;
       
-      // 🔥 TRIGGER THE AWAKENING!
       if (progress.current >= 1.0) onAwaken();
     } else {
       progress.current = Math.max(0, progress.current - delta * 1.5);
@@ -236,16 +236,15 @@ const MokshaCore = ({ isHolding, onAwaken, journeyPhase }) => {
 };
 
 // --------------------------------------------------------
-// ☸️ PHASE 4 COMPONENT: THE DASHAVATARA ASTROLABE (3D CRYSTAL FIX!)
+// ☸️ PHASE 4 COMPONENT: THE DASHAVATARA ASTROLABE 
 // --------------------------------------------------------
 const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => {
   const groupRef = useRef();
   const ring1 = useRef(); const ring2 = useRef(); const ring3 = useRef();
 
-  // 10 Avatar Positions (No more broken image URLs!)
   const avatars = useMemo(() => {
     const items = [];
-    const radius = 4.5; // Pushed out slightly so they don't clip the rings
+    const radius = 4.5; 
     for (let i = 0; i < 10; i++) {
       const angle = (i / 10) * Math.PI * 2;
       items.push({ id: i, x: Math.sin(angle) * radius, z: Math.cos(angle) * radius, angle });
@@ -256,13 +255,9 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
   useFrame((state, delta) => {
     if (journeyPhase !== 'astrolabe') return;
 
-    // Systematically lock the rotation to the active avatar!
     const targetRotation = activeAvatar * (Math.PI * 2 / 10);
-    
-    // We rotate negatively so the target avatar comes to the front smoothly
     groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, -targetRotation, delta * 4);
 
-    // Spin the decorative rings
     ring1.current.rotation.x += delta * 0.2;
     ring2.current.rotation.y -= delta * 0.3;
     ring3.current.rotation.z += delta * 0.1;
@@ -272,14 +267,12 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
 
   return (
     <group position={[0, 0, 0]}>
-      {/* THE GYROSCOPE RINGS */}
       <group>
         <Torus ref={ring1} args={[7, 0.02, 16, 100]} rotation={[Math.PI/2, 0, 0]}><meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={1} /></Torus>
         <Torus ref={ring2} args={[7.5, 0.01, 16, 100]} rotation={[0, Math.PI/3, 0]}><meshStandardMaterial color="#00ccff" transparent opacity={0.3} /></Torus>
         <Torus ref={ring3} args={[8, 0.01, 16, 100]} rotation={[0, 0, Math.PI/4]}><meshStandardMaterial color="#ff3366" transparent opacity={0.3} /></Torus>
       </group>
 
-      {/* THE 10 AVATAR 3D CRYSTALS */}
       <group ref={groupRef}>
         {avatars.map((av, index) => {
           const isActive = activeAvatar === index;
@@ -287,12 +280,11 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
           return (
             <group key={av.id} position={[av.x, 0, av.z]} rotation={[0, av.angle, 0]}>
               <mesh
-          scale={isActive ? [1.2, 2.4, 1.2] : [0.5, 1, 0.5]} // 👈 New balanced scale!
-               onClick={(e) => {
-                  e.stopPropagation(); // Stops the click from piercing through the mesh!
+                scale={isActive ? [1.2, 2.4, 1.2] : [0.5, 1, 0.5]} 
+                onClick={(e) => {
+                  e.stopPropagation(); 
                   if (isActive) {
                     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                    // Pass the Avatar's unique ID to the routing state!
                     setActiveLore(DASHAVATARA[index].id); 
                   }
                 }}
@@ -305,13 +297,11 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
                   color={isActive ? "#fbbf24" : "#00ccff"} 
                   emissive={isActive ? "#fbbf24" : "#00ccff"}
                   emissiveIntensity={isActive ? 2 : 0.2}
-                  wireframe={!isActive} // Inactive avatars are just ghostly wireframes
+                  wireframe={!isActive} 
                   transparent
                   opacity={isActive ? 1 : 0.3}
                 />
               </mesh>
-
-              {/* Dramatic cinematic lighting only turns on for the active avatar */}
               {isActive && <pointLight color="#fbbf24" distance={10} intensity={3} position={[0, 0, 2]} />}
             </group>
           );
@@ -351,7 +341,7 @@ const LoreCard = ({ section, setActivePhase, isGlitching }) => {
 };
 
 // --------------------------------------------------------
-// 🪐 DEFAULT LORE PAGE (For unmapped Avatars)
+// 🪐 DEFAULT LORE PAGE 
 // --------------------------------------------------------
 const DefaultLore = ({ avatar, onBack }) => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -372,7 +362,6 @@ const DefaultLore = ({ avatar, onBack }) => {
         </p>
       </div>
       
-      {/* Background glow so it matches the vibe! */}
       <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
         <div className="w-[40rem] h-[40rem] bg-[#00ccff] rounded-full blur-[150px]" />
       </div>
@@ -385,52 +374,45 @@ const DefaultLore = ({ avatar, onBack }) => {
 // ==========================================
 export default function CosmicHub({ onBack }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
-  // ASTROLABE STATE
-  const [activeAvatar, setActiveAvatar] = useState(0);
   
-  // 🔥 THE NEW ROUTING STATE!
+  const [activeAvatar, setActiveAvatar] = useState(0);
   const [activeLore, setActiveLore] = useState(null);
-
   const [activePhase, setActivePhase] = useState(null);
   const [journalEntry, setJournalEntry] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
   
-  // THE 4-STAGE ASCENSION ENGINE
   const [journeyPhase, setJourneyPhase] = useState('descent'); 
   const [isHolding, setIsHolding] = useState(false);
 
   const { scrollYProgress } = useScroll(); 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 15, damping: 50, mass: 4 });
+  
+  // 🔥 THE FIX: Zero-bounce math applied to the main scroll!
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
   const scrollVelocity = useVelocity(smoothProgress);  
   
   // --------------------------------------------------------
   // ✨ CINEMATIC INTRO MATH
   // --------------------------------------------------------
   const eyeScaleY = useTransform(smoothProgress, [0, 0.03], [1, 0]);
-  
   const titleOpacity = useTransform(smoothProgress, [0.01, 0.04, 0.18, 0.22], [0, 1, 1, 0]);
   const titleScale = useTransform(smoothProgress, [0.01, 0.22], [0.95, 1.05]);
-  
   const vishnuY = useTransform(smoothProgress, [0.07, 0.14, 0.18, 0.22], ["100%", "5%", "0%", "-50%"]);
   const vishnuOpacity = useTransform(smoothProgress, [0.07, 0.11, 0.18, 0.22], [0, 1, 1, 0]);
-  
   const webOfDharmaOpacity = useTransform(smoothProgress, [0.24, 0.28, 0.40, 0.45], [0, 1, 1, 0]);
   const webOfDharmaY = useTransform(smoothProgress, [0.24, 0.45], [100, -100]);
   const webOfDharmaScale = useTransform(smoothProgress, [0.24, 0.45], [0.9, 1.2]);
-   // ✨ SYSTEMATIC ASTROLABE SCROLLING & AUDIO TRIGGER ✨
+  
+  // ✨ SYSTEMATIC ASTROLABE SCROLLING
   const astrolabeContainerRef = useRef(null);
   const { scrollYProgress: astrolabeScroll } = useScroll({ target: astrolabeContainerRef });
   
-  // 🔥 The Fix: Add a spring to smooth out the raw, twitchy scroll data!
-  const smoothAstrolabe = useSpring(astrolabeScroll, { stiffness: 40, damping: 15 });
+  // 🔥 THE FIX: Zero-bounce math applied to the Astrolabe wheel!
+  const smoothAstrolabe = useSpring(astrolabeScroll, { stiffness: 400, damping: 90, mass: 0.1 });
   
-  // 🔥 The Fix: Create the Audio object ONLY ONCE so we don't leak memory!
   const chimeRef = useRef(typeof Audio !== "undefined" ? new Audio("https://www.soundjay.com/misc/sounds/magic-chime-01.mp3") : null);
 
   useEffect(() => {
     return smoothAstrolabe.onChange((latest) => {
       if (journeyPhase === 'astrolabe') {
-        // Safe boundaries so it doesn't glitch past 9 or below 0
         const newIndex = Math.max(0, Math.min(9, Math.floor(latest * 10)));
         
         if (newIndex !== activeAvatar) {
@@ -438,7 +420,7 @@ export default function CosmicHub({ onBack }) {
           
           if (chimeRef.current) {
             chimeRef.current.volume = 0.3;
-            chimeRef.current.currentTime = 0; // Restart sound instantly without overlap
+            chimeRef.current.currentTime = 0; 
             chimeRef.current.play().catch(e => console.log("Waiting for user interaction!"));
           }
         }
@@ -460,51 +442,68 @@ export default function CosmicHub({ onBack }) {
     setTimeout(() => setJourneyPhase('akashic'), 4000);
   };
 
-  // 🔥 THE MOKSHA AWAKENING TRIGGER
   const handleAwaken = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setJourneyPhase('astrolabe');
     setIsHolding(false);
   };
-// 🔥 THE NEW MASTER ROUTER
+
+ // 🔥 THE MASTER ROUTER
   if (activeLore) {
-    // If it's Vamana (ID: "V"), load the custom HyperOS page!
-    if (activeLore === 'V') {
-      return <VamanaLore onBack={() => setActiveLore(null)} />;
+    // 1. The Interventions Chain
+    if (activeLore === 'lustbreaker') {
+      return <LustBreaker onBack={() => setActiveLore(null)} onAscend={() => setActiveLore('mayaprotocol')} />;
     }
-    if (activeLore === 'I') {
-    return <MatsyaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'mayaprotocol') {
+      // ✨ MAKE SURE onAwaken IS RIGHT HERE!
+      return <MayaProtocol onBack={() => setActiveLore(null)} onAwaken={() => setActiveLore('karmaprotocol')} />;
     }
-    if (activeLore === 'II') {
-  return <KurmaLore onBack={() => setActiveLore(null)} />;
-}
-if (activeLore === 'III') {
-  return <VarahaLore onBack={() => setActiveLore(null)} />;
-}
-if (activeLore === 'IV') {
-  return <NarasimhaLore onBack={() => setActiveLore(null)} />;
-}
-    // Otherwise, find the avatar data and pass it to the Default page!
+    if (activeLore === 'karmaprotocol') {
+      return <KarmaProtocol onEnterHub={() => setActiveLore(null)} />;
+    }
+    
+    // 2. The Avatars
+    if (activeLore === 'V') return <VamanaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'I') return <MatsyaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'II') return <KurmaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'III') return <VarahaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'IV') return <NarasimhaLore onBack={() => setActiveLore(null)} />;
+    
+    // 3. The Default Fallback
     const activeAvatarData = DASHAVATARA.find(av => av.id === activeLore);
+    
+    if (!activeAvatarData) {
+      setActiveLore(null);
+      return null;
+    }
+    
     return <DefaultLore avatar={activeAvatarData} onBack={() => setActiveLore(null)} />;
   }
-
 
   return (
     <div className={`relative w-full bg-[#0a0514] font-sans text-white selection:bg-[#00ccff]/30 ${journeyPhase === 'akashic' ? 'h-screen overflow-hidden' : ''}`}>
       
       <button onClick={onBack} className="fixed top-6 left-6 z-[90] px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[#fbbf24] text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all backdrop-blur-md cursor-pointer shadow-lg">← Exit Hub</button>
-{/* 🔥 FAST TRAVEL BUTTON */}
+
       {journeyPhase === 'descent' && (
         <button 
-          onClick={handleAwaken} // Reusing the Moksha trigger to instantly warp to Phase 4!
+          onClick={handleAwaken} 
           className="fixed top-6 right-6 z-[90] px-6 py-2 bg-white/5 border border-white/20 rounded-full text-white/80 text-xs tracking-widest uppercase hover:bg-white/10 transition-all backdrop-blur-md cursor-pointer shadow-lg"
         >
           Skip to Avatars ⚡
         </button>
       )}
-
-{/* 👁️ THE EYE OPENING ANIMATION */}
+{/* 🔥 TEMPORARY LUST BREAKER VIP BUTTON */}
+      <button 
+        onClick={() => setActiveLore('lustbreaker')}
+        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] px-4 md:px-6 py-2 md:py-3 bg-[#dc2626]/10 border border-[#dc2626] rounded-full text-[#dc2626] font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase hover:bg-[#dc2626] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_30px_rgba(220,38,38,0.4)] flex items-center gap-3 group"
+      >
+        <span className="relative flex h-2 w-2 md:h-3 md:w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef4444] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#dc2626] group-hover:bg-white transition-colors"></span>
+        </span>
+        Protocol: Ojas
+      </button>
       {journeyPhase === 'descent' && (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden flex flex-col justify-between">
           <motion.div style={{ scaleY: eyeScaleY, originY: 0 }} className="w-full h-1/2 bg-black shadow-[0_10px_50px_rgba(0,204,255,0.2)]" />
@@ -512,7 +511,6 @@ if (activeLore === 'IV') {
         </div>
       )}
 
-      {/* 🔱 INTRO TEXT & VISHNU OVERLAYS */}
       {journeyPhase === 'descent' && (
         <>
           <motion.div style={{ y: vishnuY, opacity: vishnuOpacity }} className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
@@ -528,16 +526,14 @@ if (activeLore === 'IV') {
           </motion.div>
         </>
       )}
-      {/* 3D RENDER ENGINE */}
-      {/* We dynamically enable pointer events when the Astrolabe is active so you can click! */}
+
       <div className={`fixed inset-0 z-0 ${journeyPhase === 'astrolabe' ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+        {/* 🔥 Optimization: Capped the DPR to save mobile rendering! */}
+        <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 8], fov: 60 }}>
           <ambientLight intensity={0.4} />
           <EffectComposer disableNormalPass>
-            {/* Bloom goes supernova during holding! */}
             <Bloom luminanceThreshold={1.0} mipmapBlur intensity={isHolding ? 8.0 : 1.5} />
             <Vignette eskil={false} offset={0.3} darkness={isHolding ? 0.0 : 0.5} />
-            {/* New Code: Keep it mounted, just toggle the active state! */}
             <Glitch delay={[0.5, 1.5]} duration={[0.1, 0.2]} strength={[0.05, 0.1]} active={isGlitching} />
           </EffectComposer>
 
@@ -549,17 +545,14 @@ if (activeLore === 'IV') {
           <DashavataraAstrolabe journeyPhase={journeyPhase} activeAvatar={activeAvatar} setActiveLore={setActiveLore} />        </Canvas>
       </div>
 
-      {/* PHASE 1: DESCENT HTML */}
       {journeyPhase === 'descent' && (
         <div className="relative z-10 w-full flex flex-col items-center">
-          {/* This huge spacer lets the intro play slowly before the cards arrive! */}
           <div className="w-full h-[500vh] pointer-events-none" />
           
           {DHARMA_LORE.map((section) => (
             <LoreCard key={section.id} section={section} setActivePhase={setActivePhase} isGlitching={activePhase === '04'} />
           ))}
 
-          {/* THE JOURNAL HOOK */}
           <div className="w-full min-h-[120vh] flex flex-col items-center justify-center pointer-events-auto px-6 relative z-50 mt-20">
              <div className="w-full max-w-2xl flex flex-col items-center">
                <h2 className="text-[#fbbf24] text-xl md:text-3xl font-serif uppercase tracking-[0.4em] mb-4 text-center">Leave your Karma</h2>
@@ -579,7 +572,6 @@ if (activeLore === 'IV') {
         </div>
       )}
 
-      {/* PHASE 2: TRANSMUTING */}
       <AnimatePresence>
         {journeyPhase === 'transmuting' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -588,7 +580,6 @@ if (activeLore === 'IV') {
         )}
       </AnimatePresence>
 
-      {/* PHASE 3: AKASHIC HOLD */}
       {journeyPhase === 'akashic' && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer touch-none"
@@ -604,17 +595,14 @@ if (activeLore === 'IV') {
         </div>
       )}
 
-      {/* PHASE 4: THE DASHAVATARA ASTROLABE */}
       {journeyPhase === 'astrolabe' && (
         <div ref={astrolabeContainerRef} className="relative z-10 w-full h-[500vh] pointer-events-none">
-          {/* Sticky UI Overlay */}
           <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-between py-20 pointer-events-none">
             <div className="text-center">
               <h2 className="text-[#fbbf24] text-[10px] tracking-[0.5em] uppercase font-bold mb-4">The Astrolabe of Time</h2>
               <p className="text-white/40 text-xs tracking-widest uppercase animate-pulse">Scroll to rotate the wheel ↓</p>
             </div>
             
-            {/* Dynamic UI reads the active index! */}
             <motion.div 
               key={activeAvatar} 
               initial={{ opacity: 0, y: 20 }} 

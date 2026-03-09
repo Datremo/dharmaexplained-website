@@ -36,8 +36,7 @@ const FlyingStars = ({ smoothProgress }) => {
   );
 };
 
-export default function IntroSequence({ onUnlock, startAtBottom }) {
-  const containerRef = useRef(null);
+export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars }) {  const containerRef = useRef(null);
   
   // 🔥 FIX: A tiny 50ms timeout ensures Lenis renders the page height before resetting!
   useEffect(() => {
@@ -80,6 +79,13 @@ export default function IntroSequence({ onUnlock, startAtBottom }) {
           ⏭ Skip Intro
         </button>
       )}
+{/* ✨ THE NEW SKIP TO AVATARS BUTTON */}
+        <button 
+          onClick={onSkipToAvatars} /* 👈 Link this to the function that opens your CosmicHub! */
+          className="px-4 md:px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all mix-blend-difference text-[#fbbf24] shadow-[0_0_15px_rgba(251,191,36,0.3)] backdrop-blur-md group"
+        >
+          Skip to Avatars <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+        </button>
 
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
         

@@ -21,91 +21,88 @@ const ImagePlaceholder = ({ title, width, height, className = "", color = "#dc26
 );
 
 // --------------------------------------------------------
-// 🦁 THE 3D EMOTIONAL ENGINE (The Exploding Pillar)
+// 🦁 THE 3D EMOTIONAL ENGINE 
 // --------------------------------------------------------
 const Narasimha3DScene = ({ scrollProgress, isMobile }) => {
   const demonAuraRef = useRef();
   const prahladaRef = useRef();
   const beastRef = useRef();
   
-  // The Shattering Pillar Logic
   const pillarGroupRef = useRef();
+  const fragmentCount = isMobile ? 20 : 40; 
   const fragments = useMemo(() => {
-    return Array.from({ length: 40 }).map(() => ({
+    return Array.from({ length: fragmentCount }).map(() => ({
       x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 10, z: (Math.random() - 0.5) * 2,
       vx: (Math.random() - 0.5) * 30, vy: (Math.random() - 0.5) * 30, vz: (Math.random() - 0.5) * 30,
       rx: Math.random() * Math.PI, ry: Math.random() * Math.PI,
     }));
-  }, []);
+  }, [fragmentCount]);
 
   useFrame((state, delta) => {
     const scroll = scrollProgress.get();
 
-    // 🔴 1. THE DEMON KING (Hiranyakashipu)
+    // 🔴 1. THE DEMON KING
     if (demonAuraRef.current) {
       demonAuraRef.current.rotation.y += delta * (scroll > 0.6 ? 8 : 0.5); 
       let demonScale = 1;
       let demonOpacity = 0.8;
       
-      if (scroll < 0.2) demonScale = 1 + scroll * 3; // Swells with pride/penance
-      if (scroll > 0.6 && scroll < 0.85) demonScale = 2; // Frantic fight size
-      if (scroll >= 0.85) { demonScale = 0; demonOpacity = 0; } // Disemboweled
+      if (scroll < 0.2) demonScale = 1 + scroll * 3; 
+      if (scroll > 0.64 && scroll < 0.85) demonScale = 2; 
+      if (scroll >= 0.88) { demonScale = 0; demonOpacity = 0; } 
 
       demonAuraRef.current.scale.lerp(new THREE.Vector3(demonScale, demonScale, demonScale), delta * 4);
       demonAuraRef.current.material.opacity = THREE.MathUtils.lerp(demonAuraRef.current.material.opacity, demonOpacity, delta * 3);
-      demonAuraRef.current.material.color.lerp(new THREE.Color(scroll > 0.6 ? "#dc2626" : "#4c1d95"), delta * 2);
+      demonAuraRef.current.material.color.lerp(new THREE.Color(scroll > 0.64 ? "#dc2626" : "#4c1d95"), delta * 2);
     }
 
-    // ✨ 2. PRAHLADA (The Golden Soul)
+    // ✨ 2. PRAHLADA
     if (prahladaRef.current) {
-      const active = scroll > 0.25 ? 1 : 0;
+      const active = scroll > 0.20 ? 1 : 0;
       prahladaRef.current.material.opacity = THREE.MathUtils.lerp(prahladaRef.current.material.opacity, active, delta * 2);
       prahladaRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.5 - 3;
       
-      // Expands at the end to cover the screen in warm light
-      let prahladaScale = scroll >= 0.9 ? 5 : 0.6;
+      let prahladaScale = scroll >= 0.90 ? 5 : 0.6; // Calms the beast!
       prahladaRef.current.scale.lerp(new THREE.Vector3(prahladaScale, prahladaScale, prahladaScale), delta * 2);
     }
 
     // 🏛️ 3. THE SHATTERING PILLAR
     if (pillarGroupRef.current) {
-      const isVisible = scroll > 0.5 && scroll < 0.64;
+      // Appear at "WHERE IS HE" (0.56) and break at "HE STRUCK" (0.64)
+      const isVisible = scroll >= 0.56 && scroll < 0.64;
       
       pillarGroupRef.current.children.forEach((child, i) => {
         child.material.opacity = THREE.MathUtils.lerp(child.material.opacity, isVisible ? 1 : (scroll >= 0.64 ? 0.8 : 0), delta * 5);
         
-        // EXPLODE AT SCROLL 0.64!
         if (scroll >= 0.64) {
           child.position.x += fragments[i].vx * delta;
           child.position.y += fragments[i].vy * delta;
           child.position.z += fragments[i].vz * delta;
           child.rotation.x += delta * 5;
           child.rotation.y += delta * 5;
-          child.material.opacity -= delta * 1.5; // Fade out fragments
+          child.material.opacity -= delta * 1.5; 
         } else {
-          // Reset to form the pillar
           child.position.set(fragments[i].x, fragments[i].y, fragments[i].z);
-          // Shake violently right before breaking
-          if (scroll > 0.6) child.position.x += Math.sin(state.clock.elapsedTime * 100) * 0.1;
+          // Vibrate intensely before explosion
+          if (scroll > 0.60) child.position.x += Math.sin(state.clock.elapsedTime * 100) * 0.1;
         }
       });
     }
 
-    // 🦁 4. NARASIMHA (The Beast)
+    // 🦁 4. NARASIMHA
     if (beastRef.current) {
       const isActive = scroll >= 0.64 && scroll < 0.95 ? 1 : 0;
       beastRef.current.material.opacity = THREE.MathUtils.lerp(beastRef.current.material.opacity, isActive, delta * 5);
       
-      if (scroll >= 0.64 && scroll < 0.9) {
-        beastRef.current.rotation.x += delta * 15; // Visceral, terrifying movement
+      if (scroll >= 0.64 && scroll < 0.90) {
+        beastRef.current.rotation.x += delta * 15; 
         beastRef.current.rotation.y += delta * 20;
         beastRef.current.scale.lerp(new THREE.Vector3(2.5, 2.5, 2.5), delta * 5);
-      } else if (scroll >= 0.9) {
-        // Softens instantly when Prahlada touches him
+      } else if (scroll >= 0.90) {
         beastRef.current.rotation.x = THREE.MathUtils.lerp(beastRef.current.rotation.x, 0, delta * 3);
         beastRef.current.rotation.y = THREE.MathUtils.lerp(beastRef.current.rotation.y, 0, delta * 3);
         beastRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), delta * 2);
-        beastRef.current.material.color.lerp(new THREE.Color("#fbbf24"), delta * 2); // Turns from blood red to golden
+        beastRef.current.material.color.lerp(new THREE.Color("#fbbf24"), delta * 2); 
       }
     }
   });
@@ -116,7 +113,7 @@ const Narasimha3DScene = ({ scrollProgress, isMobile }) => {
         <meshStandardMaterial color="#4c1d95" emissive="#3b0764" emissiveIntensity={1.5} wireframe transparent opacity={0} />
       </Icosahedron>
 
-      <Sphere ref={prahladaRef} args={[isMobile ? 0.8 : 1, 32, 32]} position={[0, -3, 2]}>
+      <Sphere ref={prahladaRef} args={[isMobile ? 0.8 : 1, isMobile ? 16 : 32, isMobile ? 16 : 32]} position={[0, -3, 2]}>
         <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={2} transparent opacity={0} />
       </Sphere>
 
@@ -128,7 +125,7 @@ const Narasimha3DScene = ({ scrollProgress, isMobile }) => {
         ))}
       </group>
 
-      <Icosahedron ref={beastRef} args={[isMobile ? 1.5 : 2, 1]} position={[0, 0, 1]}>
+      <Icosahedron ref={beastRef} args={[isMobile ? 1.5 : 2, isMobile ? 0 : 1]} position={[0, 0, 1]}>
         <meshStandardMaterial color="#dc2626" emissive="#991b1b" emissiveIntensity={2} wireframe transparent opacity={0} />
       </Icosahedron>
     </group>
@@ -148,13 +145,13 @@ const SceneLights = ({ scrollProgress }) => {
     let intensity = 1.0;
 
     if (p > 0.63 && p < 0.66) {
-      color = new THREE.Color("#ffffff"); // BLINDING FLASHBANG
+      color = new THREE.Color("#ffffff"); // FLASHBANG
       intensity = 30.0;
-    } else if (p >= 0.66 && p < 0.9) {
-      color = new THREE.Color("#dc2626"); // Bloody Rage
+    } else if (p >= 0.66 && p < 0.90) {
+      color = new THREE.Color("#dc2626"); // RAGE
       intensity = 6.0;
-    } else if (p >= 0.9) {
-      color = new THREE.Color("#fbbf24"); // Prahlada's Grace
+    } else if (p >= 0.90) {
+      color = new THREE.Color("#fbbf24"); // GRACE
       intensity = 3.0;
     }
 
@@ -174,9 +171,9 @@ const SceneLights = ({ scrollProgress }) => {
 };
 
 // --------------------------------------------------------
-// 🚨 3. POST-PROCESSING (With Glitch Effect!)
+// 🚨 3. POST-PROCESSING 
 // --------------------------------------------------------
-const RageEffects = ({ scrollProgress }) => {
+const RageEffects = ({ scrollProgress, isMobile }) => {
   const [mounted, setMounted] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
 
@@ -184,11 +181,10 @@ const RageEffects = ({ scrollProgress }) => {
 
   useFrame(() => {
     const p = scrollProgress.get();
-    // Glitch effect triggers wildly during the fight and execution!
-    setGlitchActive(p > 0.63 && p < 0.85);
+    setGlitchActive(p > 0.63 && p < 0.88); 
   });
 
-  if (!mounted) return null;
+  if (!mounted || isMobile) return null;
 
   return (
     <EffectComposer disableNormalPass>
@@ -197,23 +193,18 @@ const RageEffects = ({ scrollProgress }) => {
       <Vignette offset={0.4} darkness={0.8} />
       <ChromaticAberration offset={aberrationOffset} />
       {glitchActive && (
-        <Glitch 
-          delay={[0, 0]} 
-          duration={[0.1, 0.3]} 
-          strength={[0.02, 0.05]} 
-          active={glitchActive} 
-          ratio={0.5} 
-        />
+        <Glitch delay={[0, 0]} duration={[0.1, 0.3]} strength={[0.02, 0.05]} active={glitchActive} ratio={0.5} />
       )}
     </EffectComposer>
   );
 };
 
 // --------------------------------------------------------
-// ⚔️ 4. MAIN EDITORIAL COMPONENT (Deep Lore Version)
+// ⚔️ 4. MAIN EDITORIAL COMPONENT 
 // --------------------------------------------------------
 export default function NarasimhaLore({ onBack }) {
   const [isMobile, setIsMobile] = useState(false);
+  
   useEffect(() => { 
     window.scrollTo(0, 0); 
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -224,40 +215,59 @@ export default function NarasimhaLore({ onBack }) {
   
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const sp = useSpring(scrollYProgress, { stiffness: 40, damping: 20, mass: 1 });
+  const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
 
-  // 🩸 COLOR SHIFTS (Grief -> Oppression -> Spark -> Terror -> Blood -> Grace)
   const bgColor = useTransform(sp, 
-    [0.0, 0.1, 0.3, 0.5, 0.63, 0.65, 0.8, 0.9, 1.0], 
+    [0.0, 0.1, 0.3, 0.5, 0.64, 0.65, 0.8, 0.88, 1.0], 
     ["#020617", "#1e1b4b", "#0f172a", "#111827", "#000000", "#ffffff", "#450a0a", "#1a0f00", "#0a0600"]
   );
 
   const shake = useTransform(sp, (p) => {
-    if (p > 0.6 && p < 0.64) return Math.sin(p * 3000) * 8; // Pillar vibrating intensely
-    if (p > 0.65 && p < 0.85) return Math.sin(p * 1000) * 15; // Brutal fight shake
+    if (p > 0.56 && p < 0.64) return Math.sin(p * 3000) * 8; 
+    if (p > 0.64 && p < 0.88) return Math.sin(p * 1000) * 15; 
     return 0;
   });
 
-  // 14 SCENES OF PURE CINEMA
+  // 🎬 THE FLAWLESS 24-SCENE PACING ENGINE
   const o = (start, peak1, peak2, end) => useTransform(sp, [start, peak1, peak2, end], [0, 1, 1, 0]);
-  const s1  = o(0.00, 0.01, 0.05, 0.07); const s2  = o(0.07, 0.09, 0.12, 0.14);
-  const s3  = o(0.14, 0.16, 0.19, 0.21); const s4  = o(0.21, 0.23, 0.26, 0.28);
-  const s5  = o(0.28, 0.30, 0.33, 0.35); const s6  = o(0.35, 0.37, 0.40, 0.42);
-  const s7  = o(0.42, 0.44, 0.47, 0.49); const s8  = o(0.49, 0.51, 0.54, 0.56);
-  const s9  = o(0.56, 0.58, 0.60, 0.62); const s10 = o(0.63, 0.64, 0.66, 0.68); // The Eruption
-  const s11 = o(0.68, 0.70, 0.73, 0.75); const s12 = o(0.75, 0.78, 0.82, 0.85); // The Loophole
-  const s13 = o(0.85, 0.87, 0.90, 0.92); const s14 = useTransform(sp, [0.93, 0.95, 1, 1], [0, 1, 1, 1]); // The Grace
+  
+  const s1  = o(0.00, 0.001, 0.03, 0.04);
+  const s2  = o(0.04, 0.05, 0.07, 0.08);
+  const s3  = o(0.08, 0.09, 0.11, 0.12);
+  const s4  = o(0.12, 0.13, 0.15, 0.16);
+  const s5  = o(0.16, 0.17, 0.19, 0.20);
+  const s6  = o(0.20, 0.21, 0.23, 0.24);
+  const s7  = o(0.24, 0.25, 0.27, 0.28);
+  const s8  = o(0.28, 0.29, 0.31, 0.32);
+  const s9  = o(0.32, 0.33, 0.35, 0.36);
+  const s10 = o(0.36, 0.37, 0.39, 0.40);
+  const s11 = o(0.40, 0.41, 0.43, 0.44);
+  const s12 = o(0.44, 0.45, 0.47, 0.48);
+  const s13 = o(0.48, 0.49, 0.51, 0.52);
+  const s14 = o(0.52, 0.53, 0.55, 0.56);
+  const s15 = o(0.56, 0.57, 0.59, 0.60);
+  const s16 = o(0.60, 0.61, 0.63, 0.64);
+  const s17 = o(0.64, 0.65, 0.67, 0.68);
+  const s18 = o(0.68, 0.69, 0.71, 0.72);
+  const s19 = o(0.72, 0.73, 0.75, 0.76);
+  const s20 = o(0.76, 0.77, 0.79, 0.80);
+  const s21 = o(0.80, 0.81, 0.83, 0.84);
+  const s22 = o(0.84, 0.85, 0.87, 0.88);
+  const s23 = o(0.88, 0.89, 0.91, 0.92);
+  const s24 = useTransform(sp, [0.92, 0.94, 0.99, 1], [0, 1, 1, 1]);
 
- // 🐾 SVG CLAW MARK ANIMATION (Draws in, then Fades out!)
-  const clawDraw = useTransform(sp, [0.76, 0.80], [0, 1]); // Slashes quickly
-  const clawOpacity = useTransform(sp, [0.76, 0.80, 0.84, 0.88], [0, 1, 1, 0]); // Fades out before the soft ending!
-  const flashbangOpacity = useTransform(sp, [0.63, 0.64, 0.66], [0, 1, 0]);
+  // 🐾 SVG CLAWS MATH 
+  const clawDraw = useTransform(sp, [0.84, 0.86], [0, 1]); 
+  const clawOpacity = useTransform(sp, [0.84, 0.86, 0.88, 0.90], [0, 1, 1, 0]); 
+  const flashbangOpacity = useTransform(sp, [0.64, 0.65, 0.67], [0, 1, 0]);
+
   const driftUp = (start, end) => useTransform(sp, [start, end], ["10vh", "-10vh"]);
   const driftDown = (start, end) => useTransform(sp, [start, end], ["-10vh", "10vh"]);
   const driftLeft = (start, end) => useTransform(sp, [start, end], [isMobile ? "2vw" : "5vw", isMobile ? "-2vw" : "-5vw"]);
+  const driftRight = (start, end) => useTransform(sp, [start, end], [isMobile ? "-2vw" : "-5vw", isMobile ? "2vw" : "5vw"]);
 
   return (
-    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[1400vh] font-sans text-white">
+    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[2400vh] font-sans text-white">
       
       <div className="hidden md:block"><CinematicCursor /></div>
 
@@ -277,11 +287,11 @@ export default function NarasimhaLore({ onBack }) {
 
       {/* 3D CANVAS */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, isMobile ? 18 : 12], fov: 60 }}>
+        <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, isMobile ? 18 : 12], fov: 60 }}>
           <SceneLights scrollProgress={sp} />
           <Narasimha3DScene scrollProgress={sp} isMobile={isMobile} />
-          <RageEffects scrollProgress={sp} />
-          <Sparkles count={150} scale={20} size={isMobile ? 2 : 4} speed={0.4} color="#fbbf24" opacity={0.3} />
+          <RageEffects scrollProgress={sp} isMobile={isMobile} />
+          <Sparkles count={isMobile ? 50 : 150} scale={20} size={isMobile ? 2 : 4} speed={0.4} color="#fbbf24" opacity={0.3} />
         </Canvas>
       </div>
 
@@ -289,7 +299,7 @@ export default function NarasimhaLore({ onBack }) {
       <motion.div style={{ x: shake }} className="sticky top-0 w-full h-screen overflow-hidden z-10 pointer-events-none">
         
         {/* SCENE 1: The Blood Oath */}
-        <motion.div style={{ opacity: s1, y: driftUp(0, 0.07) }} className="absolute inset-0 flex flex-col justify-center px-6 md:px-24">
+        <motion.div style={{ opacity: s1, y: driftUp(0, 0.04) }} className="absolute inset-0 flex flex-col justify-center px-6 md:px-24">
           <h1 className="text-sm md:text-xl font-mono tracking-[0.4em] text-[#a855f7] mb-4">IV. THE PARADOX</h1>
           <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest leading-tight">
             The Blood Oath.
@@ -299,140 +309,183 @@ export default function NarasimhaLore({ onBack }) {
           </p>
         </motion.div>
 
-        {/* SCENE 2: The Penance & The Cheat Code */}
-        <motion.div style={{ opacity: s2, y: driftDown(0.07, 0.14) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
-          <h1 className="text-[15vw] font-black uppercase tracking-tighter leading-none text-white/5 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">
-            IMMORTAL
-          </h1>
+        {/* SCENE 2: The Penance */}
+        <motion.div style={{ opacity: s2, y: driftDown(0.04, 0.08) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
+          <h1 className="text-[15vw] font-black uppercase tracking-tighter leading-none text-white/5 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">IMMORTAL</h1>
           <h2 className="text-2xl md:text-5xl font-light uppercase tracking-widest max-w-4xl relative z-10">
             He stood in fire for millennia until anthills consumed him.
           </h2>
-          <p className="text-sm md:text-xl font-mono tracking-widest opacity-100 mt-6 text-[#EFC63F] uppercase relative z-10">
-            Forcing Brahma to grant the ultimate cheat code: Not killed by man or beast. Not inside or outside. Not day or night. Not earth or sky. By no weapon forged.
-          </p>
         </motion.div>
 
-        {/* SCENE 3: The Cowardly Heavens */}
-        <motion.div style={{ opacity: s3, x: driftLeft(0.14, 0.21) }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-end px-6 md:px-24">
-          <div className="w-full md:max-w-xl text-center md:text-right z-10">
-            <h1 className="text-4xl md:text-6xl font-serif uppercase text-[#dc2626] leading-none mb-6">
-              The Heavens Panicked.
-            </h1>
-            <p className="text-lg md:text-xl tracking-widest font-light">As the king meditated, Indra tried to absuct his pregnant wife, fearing the child of such a fearsome demon could become an even greater threat.”</p>
-            <p className="text-xs md:text-sm font-mono tracking-widest opacity-100 mt-4 text-[#F42A2A]">A COWARDLY ATTEMPT ON AN UNBORN CHILD.</p>
-          </div>
+        {/* SCENE 3: The Cheat Code Intro */}
+        <motion.div style={{ opacity: s3, y: driftUp(0.08, 0.12) }} className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-24">
+          <h2 className="text-2xl md:text-5xl font-light uppercase tracking-widest max-w-4xl relative z-10 text-[#EFC63F]">
+            Forcing Brahma to grant the ultimate cheat code:
+          </h2>
         </motion.div>
 
-        {/* SCENE 4: The Sanctuary */}
-        <motion.div style={{ opacity: s4, y: driftUp(0.21, 0.28) }} className="absolute inset-0 flex flex-col items-center justify-center px-6">
-          <div className="z-10 bg-[#1e1b4b]/80 backdrop-blur-xl p-8 md:p-12 text-center border border-[#a855f7]/20 rounded-2xl md:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-            <h1 className="text-2xl md:text-5xl font-light uppercase tracking-widest text-white">
-              The Sage Narada intervened.
-            </h1>
-            <p className="text-sm md:text-lg tracking-[0.2em] uppercase mt-6 opacity-80 text-[#fbbf24] font-serif italic">
-              In the safety of the ashram, the unborn child listened. He didn't hear war. He heard the name of God. "Om Namo Narayanaya."
+        {/* SCENE 4: Boon Split 1 */}
+        <motion.div style={{ opacity: s4, x: driftLeft(0.12, 0.16) }} className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-24">
+          <div className="bg-[#1a0f00]/90 border border-[#fbbf24]/30 p-6 md:p-10 shadow-2xl backdrop-blur-md">
+            <p className="text-xl md:text-4xl font-serif italic tracking-[0.2em] uppercase text-[#EFC63F] drop-shadow-md">
+              Not killed by man or beast.<br/><br/>Not inside or outside.
             </p>
           </div>
         </motion.div>
 
-        {/* SCENE 5: The Lotus */}
-        <motion.div style={{ opacity: s5, y: driftUp(0.28, 0.35) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
+        {/* SCENE 5: Boon Split 2 */}
+        <motion.div style={{ opacity: s5, x: driftLeft(0.16, 0.20) }} className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-24">
+          <div className="bg-[#1a0f00]/90 border border-[#fbbf24]/30 p-6 md:p-10 shadow-2xl backdrop-blur-md">
+            <p className="text-xl md:text-4xl font-serif italic tracking-[0.2em] uppercase text-[#EFC63F] drop-shadow-md">
+              Not day or night.<br/><br/>Not earth or sky.<br/><br/>By no weapon forged.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* SCENE 6: The Cowardly Heavens */}
+        <motion.div style={{ opacity: s6, y: driftUp(0.20, 0.24) }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-end px-6 md:px-24">
+          <div className="w-full md:max-w-xl text-center md:text-right z-10">
+            <h1 className="text-4xl md:text-6xl font-serif uppercase text-[#dc2626] leading-none mb-6">The Heavens Panicked.</h1>
+            <p className="text-lg md:text-xl tracking-widest font-light">As the king meditated, Indra tried to abduct his pregnant wife, fearing the child of such a fearsome demon could become an even greater threat.</p>
+          </div>
+        </motion.div>
+
+        {/* SCENE 7: Cowardly Attempt */}
+        <motion.div style={{ opacity: s7, y: driftDown(0.24, 0.28) }} className="absolute inset-0 flex items-center justify-center text-center px-6">
+          <h1 className="text-2xl md:text-5xl font-black tracking-[0.3em] uppercase text-[#F42A2A] drop-shadow-[0_0_20px_rgba(244,42,42,0.8)]">
+            A COWARDLY ATTEMPT <br/> ON AN UNBORN CHILD.
+          </h1>
+        </motion.div>
+
+        {/* SCENE 8: Narada */}
+        <motion.div style={{ opacity: s8, y: driftUp(0.28, 0.32) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24">
+          <h1 className="text-3xl md:text-6xl font-light uppercase tracking-widest text-white drop-shadow-md">
+            THE SAGE NARADA INTERVENED.
+          </h1>
+        </motion.div>
+
+        {/* SCENE 9: Ashram */}
+        <motion.div style={{ opacity: s9, y: driftDown(0.32, 0.36) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24">
+          <p className="text-lg md:text-3xl tracking-[0.2em] uppercase opacity-90 text-[#fbbf24] font-serif italic drop-shadow-md max-w-5xl leading-relaxed">
+            IN THE SAFETY OF THE ASHRAM, THE UNBORN CHILD LISTENED. HE DIDN'T HEAR WAR. HE HEARD THE NAME OF GOD.
+          </p>
+        </motion.div>
+
+        {/* SCENE 10: OM NAMO NARAYANAYA */}
+        <motion.div style={{ opacity: s10 }} className="absolute inset-0 flex items-center justify-center text-center px-6">
+          <h1 className="text-4xl md:text-8xl font-black tracking-[0.3em] uppercase text-[#fbbf24] drop-shadow-[0_0_80px_rgba(251,191,36,0.8)] mix-blend-screen">
+            "OM NAMO NARAYANAYA."
+          </h1>
+        </motion.div>
+
+        {/* SCENE 11: The Lotus */}
+        <motion.div style={{ opacity: s11, y: driftUp(0.40, 0.44) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
           <h2 className="text-3xl md:text-6xl font-light tracking-widest uppercase text-white drop-shadow-2xl max-w-4xl">
             Prahlada was born. <span className="font-serif italic font-bold text-[#fbbf24] block mt-4">A boy of pure gold in a lineage of ash.</span>
           </h2>
           <p className="text-sm md:text-xl font-mono tracking-widest opacity-100 mt-8 uppercase text-white">The Demon King's ultimate weapon was a saint.</p>
         </motion.div>
 
-        {/* SCENE 6: The Torture */}
-        <motion.div style={{ opacity: s6, y: driftDown(0.35, 0.42) }} className="absolute inset-0 flex flex-col justify-center text-center md:text-left px-6 md:px-24">
-          <h1 className="text-[18vw] font-black uppercase tracking-tighter leading-none text-white/5 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">
-            TREASON
-          </h1>
-          <h1 className="text-3xl md:text-6xl font-bold uppercase tracking-widest max-w-2xl leading-tight text-white relative z-10">
-            "Kill Him."
-          </h1>
-          <h2 className="text-1xl md:text-6xl font-light tracking-widest text-white drop-shadow-2xl max-w-4xl">
-            Hiranyakashyapu ordered ! 
-          </h2>
-          <p className="text-lg md:text-2xl font-serif italic text-[#dc2626] mt-6 tracking-[0.2em] relative z-10">
-            Trampled by elephants. Thrown into pyres. Bitten by vipers. Poisoned chalices.
+        {/* SCENE 12: Treason */}
+        <motion.div style={{ opacity: s12, y: driftDown(0.44, 0.48) }} className="absolute inset-0 flex flex-col justify-center text-center md:text-left px-6 md:px-24">
+          <h1 className="text-[18vw] font-black uppercase tracking-tighter leading-none text-white/5 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">TREASON</h1>
+          <h1 className="text-3xl md:text-6xl font-bold uppercase tracking-widest max-w-2xl leading-tight text-white relative z-10 mb-4">"Kill Him."</h1>
+          <h2 className="text-xl md:text-4xl font-light tracking-widest text-white/70 drop-shadow-2xl max-w-4xl relative z-10">Hiranyakashyapu ordered!</h2>
+        </motion.div>
+
+        {/* SCENE 13: Torture */}
+        <motion.div style={{ opacity: s13, x: driftLeft(0.48, 0.52) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24">
+          <p className="text-xl md:text-4xl font-serif italic text-[#dc2626] tracking-[0.2em] leading-relaxed drop-shadow-md">
+            Trampled by elephants. <br className="md:hidden" /> Thrown into pyres. <br/> Bitten by vipers. <br className="md:hidden" /> Poisoned chalices.
           </p>
         </motion.div>
 
-        {/* SCENE 7: Unbreakable */}
-        <motion.div style={{ opacity: s7, y: driftUp(0.42, 0.49) }} className="absolute inset-0 flex items-center justify-center md:justify-end px-6 md:px-24">
+        {/* SCENE 14: Unbreakable */}
+        <motion.div style={{ opacity: s14, y: driftUp(0.52, 0.56) }} className="absolute inset-0 flex items-center justify-center md:justify-end px-6 md:px-24">
           <div className="w-full md:max-w-xl text-center md:text-right z-10">
-            <h1 className="text-3xl md:text-5xl font-light uppercase tracking-widest leading-tight">
-              But the boy survived every assassination.
-            </h1>
-            <p className="text-sm md:text-xl font-mono tracking-widest opacity-80 mt-6 text-[#fbbf24] uppercase">He just smiled, closed his eyes, and prayed to Lord Vishnu. </p>
+            <h1 className="text-3xl md:text-5xl font-light uppercase tracking-widest leading-tight">But the boy survived every assassination.</h1>
+            <p className="text-sm md:text-xl font-mono tracking-widest opacity-80 mt-6 text-[#fbbf24] uppercase">He just smiled, closed his eyes, and prayed to Lord Vishnu.</p>
           </div>
         </motion.div>
 
-        {/* SCENE 8: The Breaking Point */}
-        <motion.div style={{ opacity: s8, y: driftDown(0.49, 0.56) }} className="absolute inset-0 flex items-center justify-center text-center px-6">
-          <div className="p-8 md:p-12 border-2 border-[#dc2626] bg-[#220505]/90 backdrop-blur-xl">
-            <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-[#dc2626] mb-4">
-              "WHERE IS HE?!"
-            </h1>
-            <p className="text-lg md:text-3xl font-serif italic tracking-[0.2em] text-white">The tyrant screamed, drawing his sword.</p>
-          </div>
+        {/* SCENE 15: The Breaking Point */}
+        <motion.div style={{ opacity: s15, y: driftDown(0.56, 0.60) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-[#dc2626] mb-4">"WHERE IS HE?!"</h1>
+          <p className="text-lg md:text-3xl font-serif italic tracking-[0.2em] text-white">"Is your God in this pillar?!"</p>
         </motion.div>
 
-        {/* SCENE 9: The Question */}
-        <motion.div style={{ opacity: s9 }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest text-white mb-6">
-            "Is your God in this pillar?!"
+        {/* SCENE 16: The Father's Answer */}
+        <motion.div style={{ opacity: s16, y: driftUp(0.60, 0.64) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <h2 className="text-4xl md:text-7xl font-serif italic uppercase tracking-widest text-[#fbbf24] drop-shadow-lg">
+            "He is everywhere, Father."
           </h2>
-          <p className="text-xl md:text-4xl font-serif italic text-[#fbbf24]">"He is everywhere, Father."</p>
         </motion.div>
 
-        {/* SCENE 10: THE ERUPTION (FLASHBANG TRIGGERS HERE) */}
-        <motion.div style={{ opacity: s10 }} className="absolute inset-0 flex items-center justify-center text-center px-6">
-          <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black mix-blend-difference drop-shadow-2xl">
-            HE STRUCK THE STONE.
+        {/* SCENE 17: THE ERUPTION */}
+        <motion.div style={{ opacity: s17 }} className="absolute inset-0 flex items-center justify-center text-center px-6">
+          <h1 className="text-5xl md:text-9xl font-black uppercase tracking-tighter text-black mix-blend-difference drop-shadow-2xl">
+            HE STRUCK <br/> THE STONE.
           </h1>
         </motion.div>
 
-        {/* SCENE 11: The Loophole Masterclass */}
-        <motion.div style={{ opacity: s11, y: driftUp(0.68, 0.75) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24 bg-black/60 backdrop-blur-md border-y-4 border-[#dc2626]">
-          <h1 className="text-2xl md:text-5xl font-light uppercase tracking-widest leading-relaxed max-w-4xl text-white relative z-10">
-            From inside what emerged was..... 
+        {/* SCENE 18: Emerged */}
+        <motion.div style={{ opacity: s18, y: driftUp(0.68, 0.72) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <h1 className="text-2xl md:text-5xl font-light uppercase tracking-widest leading-relaxed max-w-4xl text-white">From inside what emerged was.....</h1>
+        </motion.div>
+
+        {/* SCENE 19: NARASIMHA REVEAL */}
+        <motion.div style={{ opacity: s19, y: driftDown(0.72, 0.76) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24">
+          <h1 className="text-[15vw] md:text-[12vw] font-black uppercase tracking-tighter leading-none text-[#fbbf24] mb-2 drop-shadow-[0_0_80px_rgba(251,191,36,0.8)]">NARASIMHA</h1>
+          <p className="text-2xl md:text-5xl font-light tracking-[0.3em] uppercase text-white mb-8 drop-shadow-[0_5px_15px_rgba(0,0,0,0.9)]">Neither Man nor Beast.</p>
+        </motion.div>
+
+        {/* SCENE 20: Doorway Split */}
+        <motion.div style={{ opacity: s20, x: driftLeft(0.76, 0.80) }} className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-24">
+          <div className="bg-[#1a0f00]/90 border border-[#fbbf24]/30 p-8 shadow-2xl backdrop-blur-md">
+            <p className="text-lg md:text-3xl tracking-[0.2em] uppercase text-[#EF2828] font-bold italic drop-shadow-md">
+              He dragged him to the doorway (Not inside/outside).
+            </p>
+          </div>
+        </motion.div>
+
+        {/* SCENE 21: Twilight Lap Split */}
+        <motion.div style={{ opacity: s21, x: driftRight(0.80, 0.84) }} className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-24">
+          <div className="bg-[#1a0f00]/90 border border-[#fbbf24]/30 p-8 shadow-2xl backdrop-blur-md">
+            <p className="text-lg md:text-3xl tracking-[0.2em] uppercase text-[#EF2828] font-bold italic drop-shadow-md">
+              At Twilight (Not day/night).<br/><br/>Placed him on his lap (Not earth/sky).
+            </p>
+          </div>
+        </motion.div>
+
+        {/* SCENE 22: THE BRUTAL EXECUTION (Claws Draw!) */}
+        <motion.div style={{ opacity: s22 }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-24 bg-[#220505]/60 backdrop-blur-md border-y-8 border-[#dc2626]">
+          <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-[#dc2626] drop-shadow-[0_0_80px_rgba(220,38,38,1)] mb-6">
+            DISEMBOWELED.
           </h1>
-        <h1 className="text-[12vw] font-black uppercase tracking-tighter leading-none text-[#dc2626]/20 absolute top-1/2 -translate-y-1/2">NARASIMHA</h1>
-            <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-white drop-shadow-[0_0_40px_rgba(220,38,38,1)] mb-4">
-              Neither Man nor Beast.
-            </h1>
-          <p className="font-bold italic text-[#EF2828] text-lg md:text-3xl mt-6 relative z-10">
-            He dragged him to the doorway (Not inside/outside). At Twilight (Not day/night). Placed him on his lap (Not earth/sky).
+          <p className="text-xl md:text-4xl font-bold italic text-white tracking-widest max-w-4xl drop-shadow-2xl leading-relaxed">
+            No weapons forged. With a cosmic roar, he plunged his bare, divine claws into the tyrant's stomach and tore him wide open.
           </p>
         </motion.div>
 
-        {/* SCENE 12: THE EXECUTION (Claws Draw!) */}
-        <motion.div style={{ opacity: s12 }} className="absolute inset-0 flex items-center justify-center text-center px-6">
-          <div className="z-10">
-            <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-white drop-shadow-[0_0_40px_rgba(220,38,38,1)] mb-4">
-              NO WEAPONS FORGED.
-            </h1>
-            <p className="text-2xl md:text-4xl font-BOLD italic text-[#FFFEFE] tracking-widest">Just bare, divine claws.</p>
-          </div>
-        </motion.div>
-
-        {/* SCENE 13: Unstoppable Rage vs Innocent Love */}
-        <motion.div style={{ opacity: s13, y: driftDown(0.85, 0.92) }} className="absolute inset-0 flex items-center justify-center px-6 md:px-24 text-center">
+        {/* SCENE 23: The Aftermath */}
+        <motion.div style={{ opacity: s23, y: driftDown(0.88, 0.92) }} className="absolute inset-0 flex items-center justify-center px-6 md:px-24 text-center">
           <div className="w-full z-10">
-            <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest text-[#fbbf24] mb-6">
+            <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest text-[#dc2626] mb-8 drop-shadow-md">
               The Gods backed away in terror.
             </h2>
-            <p className="text-lg md:text-2xl tracking-[0.2em] uppercase text-white/80 font-serif italic">The beast drank the blood, his roar shaking the stars. Only the child stepped forward. Unafraid.</p>
+            <div className="inline-block bg-black/50 p-6 md:p-10 border border-[#dc2626]/30 shadow-2xl backdrop-blur-sm">
+              <p className="text-lg md:text-3xl tracking-[0.2em] uppercase text-white font-serif italic max-w-4xl mx-auto leading-relaxed">
+                The invincible king was shredded. The beast drank the blood, his rage shaking the very stars...
+                <br/><br/>
+                <span className="text-[#fbbf24] font-bold">Only the child stepped forward. Unafraid.</span>
+              </p>
+            </div>
           </div>
         </motion.div>
 
-        {/* SCENE 14: THE GRACE */}
-        <motion.div style={{ opacity: s14 }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h1 className="text-3xl md:text-6xl font-light tracking-[0.3em] uppercase mb-8 text-[#fbbf24]">
-            The Beast Wept.
-          </h1>
+        {/* SCENE 24: THE GRACE */}
+        <motion.div style={{ opacity: s24 }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <h1 className="text-3xl md:text-6xl font-light tracking-[0.3em] uppercase mb-8 text-[#fbbf24]">The Beast Wept.</h1>
           <p className="text-sm md:text-xl opacity-90 tracking-widest uppercase mb-10 text-white">Little hands touched the blood-soaked mane. The rage melted into infinite fatherly love.</p>
           <div className="w-[1px] h-16 md:h-32 bg-gradient-to-b from-[#fbbf24] to-transparent mb-10" />
           <div className="w-full max-w-5xl text-base md:text-4xl font-serif leading-relaxed p-8 md:p-12 border border-[#fbbf24]/30 bg-[#1a0f00]/90 backdrop-blur-2xl rounded-2xl md:rounded-[3rem] shadow-[0_0_80px_rgba(251,191,36,0.2)] relative">
