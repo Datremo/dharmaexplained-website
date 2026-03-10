@@ -12,6 +12,8 @@ import * as THREE from 'three';
 import LustBreaker from './LustBreaker';
 import MayaProtocol from './MayaProtocol';
 import KarmaProtocol from './KarmaProtocol';
+import { setGlobalMusic } from './GlobalAudio'; // Make sure this is at the top of the file!
+
 // --------------------------------------------------------
 // 📜 THE LORE DATA
 // --------------------------------------------------------
@@ -388,7 +390,13 @@ export default function CosmicHub({ onBack }) {
   // 🔥 THE FIX: Zero-bounce math applied to the main scroll!
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
   const scrollVelocity = useVelocity(smoothProgress);  
-  
+  // ✨ This constantly watches if you are in the main hub or a sub-page!
+  useEffect(() => {
+    if (activeLore === null) {
+      setGlobalMusic('kshirsagar'); // Plays the Ocean of Milk theme when in the hub
+    }
+  }, [activeLore]);
+
   // --------------------------------------------------------
   // ✨ CINEMATIC INTRO MATH
   // --------------------------------------------------------

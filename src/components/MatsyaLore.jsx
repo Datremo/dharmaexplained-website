@@ -4,6 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { Box, Sphere, Cylinder, Torus } from '@react-three/drei';
+import { setGlobalMusic } from './GlobalAudio';
 
 // --------------------------------------------------------
 // 🖼️ HELPER: CINEMATIC IMAGE PLACEHOLDER (Abyss Edition)
@@ -117,7 +118,9 @@ const Matsya3DScene = ({ scrollProgress }) => {
 export default function MatsyaLore({ onBack }) {
   const containerRef = useRef(null);
   useEffect(() => { window.scrollTo(0, 0); }, []);
-  
+  useEffect(() => {
+    setGlobalMusic('matsya');
+  }, []);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 40, damping: 20, mass: 1 });
 

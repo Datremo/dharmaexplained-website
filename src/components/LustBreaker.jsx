@@ -6,6 +6,7 @@ import { EffectComposer, Bloom, Vignette, Noise, Glitch } from '@react-three/pos
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import CinematicCursor from './CinematicCursor';
+import { setGlobalMusic } from './GlobalAudio'; // At the top
 
 // --------------------------------------------------------
 // 🔥 THE 3D ENGINE: TRANSMUTATION OF OJAS
@@ -163,6 +164,13 @@ export default function LustBreaker({ onBack, onAscend }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
+  // Add this inside the component:
+  useEffect(() => {
+    setGlobalMusic('lustbreaker');
+    // When the user leaves this page, switch back to the hub music!
+    return () => setGlobalMusic('hub');
+  }, []);
+
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });

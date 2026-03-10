@@ -6,6 +6,7 @@ import { EffectComposer, Bloom, Vignette, Noise, Glitch, ChromaticAberration } f
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import CinematicCursor from './CinematicCursor';
+import { setGlobalMusic } from './GlobalAudio'; // At the top
 
 // --------------------------------------------------------
 // 🔥 THE 3D ENGINE: THE DIGITAL TORNADO TO THE MONOLITH
@@ -185,6 +186,14 @@ export default function MayaProtocol({ onBack, onAwaken }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
+
+
+  // Inside the component:
+  useEffect(() => {
+    setGlobalMusic('maya');
+    return () => setGlobalMusic('hub');
+  }, []);
+
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });

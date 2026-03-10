@@ -5,6 +5,7 @@ import { Box, Icosahedron, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import CinematicCursor from './CinematicCursor';
+import { setGlobalMusic } from './GlobalAudio'; // At the top
 
 // --------------------------------------------------------
 // 🔨 THE 3D ENGINE: ASSEMBLING THE EMPIRE
@@ -140,6 +141,13 @@ export default function KarmaProtocol({ onEnterHub }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
+
+  // Inside the component:
+  useEffect(() => {
+    setGlobalMusic('karma');
+    return () => setGlobalMusic('hub');
+  }, []);
+
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });

@@ -6,6 +6,7 @@ import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration } from '@re
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import CinematicCursor from './CinematicCursor';
+import { setGlobalMusic } from './GlobalAudio';
 
 const aberrationOffset = new THREE.Vector2(0.005, 0.005);
 
@@ -222,7 +223,9 @@ export default function VarahaLore({ onBack }) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+  useEffect(() => {
+    setGlobalMusic('varaha');
+  }, []);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 40, damping: 20, mass: 1 });
 

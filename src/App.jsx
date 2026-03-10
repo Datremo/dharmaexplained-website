@@ -4,6 +4,7 @@ import Lenis from 'lenis';
 import IntroSequence from './components/IntroSequence';
 import WeaponShowcase from './components/WeaponShowcase';
 import CosmicHub from './components/CosmicHub'; 
+import GlobalAudio from './components/GlobalAudio';
 
 export default function App() {
   const [view, setView] = useState('intro');
@@ -36,7 +37,7 @@ export default function App() {
 
   return (
     <div className="w-full min-h-screen bg-[#010101] text-white selection:bg-[#fbbf24]/30">
-      
+      <GlobalAudio />
       {/* Pass the startAtBottom AND our new onSkipToAvatars prop! */}
       {view === 'intro' && (
         <IntroSequence 

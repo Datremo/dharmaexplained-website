@@ -5,6 +5,7 @@ import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocess
 import * as THREE from 'three';
 import { Box, Sphere, Cylinder, Torus, Icosahedron } from '@react-three/drei';
 import CinematicCursor from './CinematicCursor'; // 👈 Import it up here!
+import { setGlobalMusic } from './GlobalAudio';
 // --------------------------------------------------------
 // 🖼️ HELPER: CINEMATIC IMAGE PLACEHOLDER (Kurma Edition)
 // --------------------------------------------------------
@@ -164,7 +165,10 @@ const Kurma3DScene = ({ scrollProgress }) => {
 export default function KurmaLore({ onBack }) {
   const containerRef = useRef(null);
   useEffect(() => { window.scrollTo(0, 0); }, []);
-  
+  useEffect(() => {
+    setGlobalMusic('kurma');
+  }, []);
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 40, damping: 20, mass: 1 });
 

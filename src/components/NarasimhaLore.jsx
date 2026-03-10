@@ -6,7 +6,7 @@ import { EffectComposer, Bloom, Vignette, Noise, Glitch, ChromaticAberration } f
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import CinematicCursor from './CinematicCursor';
-
+import { setGlobalMusic } from './GlobalAudio';
 const aberrationOffset = new THREE.Vector2(0.015, 0.015);
 
 // --------------------------------------------------------
@@ -212,7 +212,9 @@ export default function NarasimhaLore({ onBack }) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+  useEffect(() => {
+    setGlobalMusic('narasimha');
+  }, []);
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });

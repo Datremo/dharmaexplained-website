@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import { setGlobalMusic } from './GlobalAudio';
 
 // 🌌 STAR GENERATOR
 function generateStars(numPoints) {
@@ -69,6 +70,10 @@ export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars
   const kalyug1Opacity = useTransform(smoothProgress, [0.68, 0.72, 0.75, 0.78], [0, 1, 1, 0]);
   const kalyug2Opacity = useTransform(smoothProgress, [0.80, 0.84, 0.87, 0.90], [0, 1, 1, 0]);
   const choiceOpacity = useTransform(smoothProgress, [0.92, 0.96, 1], [0, 1, 1]);
+
+useEffect(() => {
+    setGlobalMusic('intro'); // Drops the intro music the second the site loads
+  }, []);
 
   return (
     <div ref={containerRef} className="relative w-full h-[1500vh] bg-[#010101]">
