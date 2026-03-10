@@ -6,6 +6,7 @@ import VamanaLore from './VamanaLore';
 import MatsyaLore from './MatsyaLore'; 
 import KurmaLore from './KurmaLore';
 import VarahaLore from './VarahaLore';
+import ParshuramaLore from './ParshuramaLore';
 import NarasimhaLore from './NarasimhaLore';
 import { EffectComposer, Bloom, Vignette, Glitch } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -476,6 +477,7 @@ export default function CosmicHub({ onBack }) {
     if (activeLore === 'II') return <KurmaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'III') return <VarahaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'IV') return <NarasimhaLore onBack={() => setActiveLore(null)} />;
+    if (activeLore === 'VI') return <ParshuramaLore onBack={() => setActiveLore(null)} />;
     
     // 3. The Default Fallback
     const activeAvatarData = DASHAVATARA.find(av => av.id === activeLore);
