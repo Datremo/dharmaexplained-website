@@ -18,6 +18,7 @@ const TRACKS = {
   parshurama: "/parshurama.mp3",
 };
 
+
 // ✨ THE MAGIC RADIO TRANSMITTER
 export const setGlobalMusic = (themeName) => {
   window.dispatchEvent(new CustomEvent('switchTrack', { detail: themeName }));
