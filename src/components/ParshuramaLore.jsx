@@ -359,17 +359,15 @@ const CinematicEffects = ({ scrollProgress, isMobile }) => {
 export default function ParshuramaLore({ onBack }) {
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => { 
-    window.scrollTo(0, 0); 
+ 
+    
+   useEffect(() => { 
+    window.scrollTo(0, 0);
     setGlobalMusic('parshurama');
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => {
-      setGlobalMusic('hub');
-      window.removeEventListener('resize', checkMobile);
-    };
+    window.addEventListener('resize', checkMobile); 
+    // Notice how we DO NOT return a cleanup function for the music here!
   }, []);
 
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });

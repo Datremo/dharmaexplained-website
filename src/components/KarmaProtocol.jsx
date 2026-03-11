@@ -142,10 +142,10 @@ export default function KarmaProtocol({ onEnterHub }) {
   }, []);
   
 
-  // Inside the component:
-  useEffect(() => {
-    setGlobalMusic('karma');
-    return () => setGlobalMusic('hub');
+ useEffect(() => { 
+    window.scrollTo(0, 0);
+    setGlobalMusic('karma'); 
+    // Notice how we DO NOT return a cleanup function for the music here!
   }, []);
 
   const containerRef = useRef(null);

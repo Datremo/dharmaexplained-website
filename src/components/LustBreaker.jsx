@@ -164,11 +164,10 @@ export default function LustBreaker({ onBack, onAscend }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
-  // Add this inside the component:
-  useEffect(() => {
-    setGlobalMusic('lustbreaker');
-    // When the user leaves this page, switch back to the hub music!
-    return () => setGlobalMusic('hub');
+ useEffect(() => { 
+    window.scrollTo(0, 0);
+    setGlobalMusic('lustbreaker'); 
+    // Notice how we DO NOT return a cleanup function for the music here!
   }, []);
 
   const containerRef = useRef(null);

@@ -188,10 +188,10 @@ export default function MayaProtocol({ onBack, onAwaken }) {
   
 
 
-  // Inside the component:
-  useEffect(() => {
-    setGlobalMusic('maya');
-    return () => setGlobalMusic('hub');
+  useEffect(() => { 
+    window.scrollTo(0, 0);
+    setGlobalMusic('maya'); 
+    // Notice how we DO NOT return a cleanup function for the music here!
   }, []);
 
   const containerRef = useRef(null);

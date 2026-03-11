@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-// 🎵 THE MASTER TRACKLIST
-// Make sure these exact .mp3 files are inside your 'public' folder!
 const TRACKS = {
-  intro: "/intro.mp3",             // The spinning sequence
-  kshirsagar: "/vishnu_bg.mp3",   // The main Cosmic Ocean hub
-  lustbreaker: "/lustbreaker.mp3", // Dark & Tense
-  maya: "/maya.mp3",               // Glitchy & Chaotic
-  karma: "/karma.mp3",             // Epic & Triumphant
-  // The Avatars:
+  intro: "/intro.mp3",             
+  kshirsagar: "/vishnu_bg.mp3",   
+  lustbreaker: "/lustbreaker.mp3", 
+  maya: "/maya.mp3",               
+  karma: "/karma.mp3",             
   matsya: "/matsya.mp3",
   kurma: "/kurma.mp3",
   varaha: "/varaha.mp3",
@@ -18,8 +15,6 @@ const TRACKS = {
   parshurama: "/parshurama.mp3",
 };
 
-
-// ✨ THE MAGIC RADIO TRANSMITTER
 export const setGlobalMusic = (themeName) => {
   window.dispatchEvent(new CustomEvent('switchTrack', { detail: themeName }));
 };
@@ -27,29 +22,33 @@ export const setGlobalMusic = (themeName) => {
 export default function GlobalAudio() {
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false); 
-  
-  // Starts with the Intro music by default!
   const audioRef = useRef(typeof Audio !== "undefined" ? new Audio(TRACKS.intro) : null);
+  const playPromiseRef = useRef(null); // ✨ This protects the app from crashing!
 
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.loop = true;
     audioRef.current.volume = 0.4;
 
-    const handleSwitch = (e) => {
+    const handleSwitch = async (e) => {
       const newTheme = e.detail;
-      const newSrc = TRACKS[newTheme]; 
+      const newSrc = TRACKS[newTheme] || TRACKS.kshirsagar; 
 
       if (newSrc && audioRef.current.src !== window.location.origin + newSrc) {
         const wasPlaying = isPlayingRef.current;
         
+        // ✨ MAGIC FIX: Wait for any currently loading audio to finish before switching
+        if (playPromiseRef.current) {
+          try { await playPromiseRef.current; } catch (err) {} 
+        }
+
         audioRef.current.pause();
         audioRef.current.src = newSrc;
         audioRef.current.load();
         
-        // If the user turned sound ON, keep playing the new track!
         if (wasPlaying) {
-          audioRef.current.play().catch(err => console.log("Autoplay blocked:", err));
+          playPromiseRef.current = audioRef.current.play();
+          playPromiseRef.current.catch(err => console.log("Audio transition smoothed."));
         }
       }
     };
@@ -66,10 +65,11 @@ export default function GlobalAudio() {
       isPlayingRef.current = false;
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => {
+      playPromiseRef.current = audioRef.current.play();
+      playPromiseRef.current.then(() => {
         isPlayingRef.current = true;
         setIsPlaying(true);
-      }).catch(err => console.error("Audio blocked:", err));
+      }).catch(err => console.error("Audio blocked by browser:", err));
     }
   };
 
