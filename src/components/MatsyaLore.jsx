@@ -179,31 +179,30 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
           </h1>
         </motion.div>
 
+        
         {/* SCENE 2 */}
-        <motion.div style={{ opacity: s2, y: driftDown(0.07, 0.14) }} className="absolute inset-0 flex items-center px-10 md:px-24">
-          <div className="w-1/2 flex flex-col items-start text-left z-10">
+        <motion.div style={{ opacity: s2, y: driftDown(0.07, 0.14) }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-between px-6 md:px-24 pt-20 md:pt-0">
+          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left z-10 mb-8 md:mb-0">
             <h1 className="text-xl md:text-2xl font-mono tracking-[0.4em] text-[#00ccff] mb-4">/ THE PREVIOUS AGE /</h1>
-            <h2 className="text-4xl md:text-6xl font-light uppercase tracking-widest leading-tight">
-              The waters began<br/>to rise.
+            <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest leading-tight">
+              The waters began<br className="hidden md:block"/>to rise.
             </h2>
-            <p className="text-lg md:text-xl font-serif italic tracking-widest mt-8 max-w-md border-l border-[#00ccff]/30 pl-6 opacity-80">
+            <p className="text-base md:text-xl font-serif italic tracking-widest mt-4 md:mt-8 md:border-l border-[#00ccff]/30 md:pl-6 opacity-80">
               King Manu stood in the river, praying for humanity.
             </p>
           </div>
-          <img src="/matsya-1.png" alt="Hands Offering Water" className="w-1/2 max-w-lg h-[50vh] absolute right-10 md:right-24 rounded-[3rem] rounded-bl-none object-cover shadow-[0_0_40px_rgba(0,204,255,0.2)]" />
+          <img src="/matsya-1.png" alt="Hands Offering Water" className="relative md:absolute md:right-24 w-[80vw] md:w-1/2 max-w-lg h-[30vh] md:h-[50vh] rounded-[2rem] md:rounded-[3rem] md:rounded-bl-none object-cover shadow-[0_0_40px_rgba(0,204,255,0.2)]" />
         </motion.div>
-
-        {/* SCENE 3 */}
-        <motion.div style={{ opacity: s3, x: driftLeft(0.14, 0.21) }} className="absolute inset-0 flex items-center justify-end px-10 md:px-24">
-          <img src="/matsya-2.png" alt="Tiny Glowing Fish" className={`w-[20vw] h-[20vw] absolute left-20 ${ABYSS_BORDER} rounded-3xl object-cover`} />
-          <div className="max-w-xl text-right z-10">
-            <h1 className="text-4xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-6">
-              A tiny fish fell<br/>into his palms.
+{/* SCENE 3 */}
+        <motion.div style={{ opacity: s3, x: driftLeft(0.14, 0.21) }} className="absolute inset-0 flex flex-col-reverse md:flex-row items-center justify-center md:justify-end px-6 md:px-24">
+          <img src="/matsya-2.png" alt="Tiny Glowing Fish" className="relative md:absolute md:left-20 w-64 h-64 md:w-[20vw] md:h-[20vw] border border-[#00ccff]/30 shadow-[0_0_50px_rgba(0,204,255,0.2)] rounded-3xl object-cover mt-8 md:mt-0" />
+          <div className="w-full md:max-w-xl text-center md:text-right z-10">
+            <h1 className="text-3xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-4 md:mb-6">
+              A tiny fish fell<br className="hidden md:block"/>into his palms.
             </h1>
-            <p className="text-3xl font-serif text-[#00ccff] italic drop-shadow-md">&quot;Save me,&quot; it whispered.</p>
+            <p className="text-xl md:text-3xl font-serif text-[#00ccff] italic drop-shadow-md">&quot;Save me,&quot; it whispered.</p>
           </div>
         </motion.div>
-
         {/* SCENE 4 */}
         <motion.div style={{ opacity: s4, y: driftUp(0.21, 0.28) }} className="absolute inset-0 flex flex-col items-center justify-center">
           <h1 className="text-[12vw] font-black uppercase tracking-tighter leading-none text-white/5 absolute top-1/2 -translate-y-1/2 whitespace-nowrap select-none">
@@ -219,22 +218,23 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
           </div>
         </motion.div>
 
-        {/* SCENE 5 */}
-        <motion.div style={{ opacity: s5, y: driftDown(0.28, 0.35) }} className="absolute inset-0 flex items-end justify-center pb-32">
-          <div className="relative w-full max-w-6xl aspect-[21/9] flex items-end p-10">
-            <img src="/matsya-3.png" alt="Massive Shadow in Ocean" className="w-full h-full absolute inset-0 rounded-t-[4rem] border-b-0 object-cover" />
-            <div className="z-10 bg-black/50 backdrop-blur-xl p-8 rounded-2xl border border-white/10">
-              <h1 className="text-3xl md:text-5xl font-light uppercase tracking-widest text-white">He released it into the ocean.</h1>
-              <p className="text-xl font-serif italic text-[#00ccff] mt-4">Within days, it eclipsed the sea.</p>
+       {/* SCENE 5 */}
+        <motion.div style={{ opacity: s5, y: driftDown(0.28, 0.35) }} className="absolute inset-0 flex items-center md:items-end justify-center md:pb-32 px-4 md:px-0">
+          <div className="relative w-full max-w-6xl aspect-[4/3] md:aspect-[21/9] flex items-end p-6 md:p-10 rounded-3xl md:rounded-t-[4rem] overflow-hidden">
+            <img src="/matsya-3.png" alt="Massive Shadow in Ocean" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative z-10 bg-black/60 backdrop-blur-xl p-6 md:p-8 rounded-2xl border border-white/10 w-full md:w-auto text-center md:text-left">
+              <h1 className="text-xl md:text-5xl font-light uppercase tracking-widest text-white">He released it into the ocean.</h1>
+              <p className="text-base md:text-xl font-serif italic text-[#00ccff] mt-2 md:mt-4">Within days, it eclipsed the sea.</p>
             </div>
           </div>
         </motion.div>
+        
 
-        {/* SCENE 6 */}
-        <motion.div style={{ opacity: s6, y: driftUp(0.35, 0.42) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-10">
-          <img src="/matsya-4.png" alt="Giant Glowing Eye" className="w-[80vw] max-w-4xl h-[40vh] mb-12 border border-[#fbbf24]/30 rounded-2xl object-cover shadow-[0_0_40px_rgba(0,204,255,0.1)]" />
-          <p className="text-2xl tracking-[0.4em] uppercase opacity-70 mb-4">Manu trembled.</p>
-          <h1 className="text-5xl md:text-7xl font-serif italic text-[#fbbf24] drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]">
+       {/* SCENE 6 */}
+        <motion.div style={{ opacity: s6, y: driftUp(0.35, 0.42) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 md:px-10">
+          <img src="/matsya-4.png" alt="Giant Glowing Eye" className="w-[90vw] md:w-[80vw] max-w-4xl h-[25vh] md:h-[40vh] mb-8 md:mb-12 border border-[#fbbf24]/30 rounded-2xl object-cover shadow-[0_0_40px_rgba(0,204,255,0.1)]" />
+          <p className="text-sm md:text-2xl tracking-[0.4em] uppercase opacity-70 mb-2 md:mb-4">Manu trembled.</p>
+          <h1 className="text-3xl md:text-7xl font-serif italic text-[#fbbf24] drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]">
             &quot;Who are you?&quot;
           </h1>
         </motion.div>
@@ -255,17 +255,17 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
         </motion.div>
 
         {/* SCENE 8 */}
-        <motion.div style={{ opacity: s8, y: driftUp(0.49, 0.56) }} className="absolute inset-0 flex items-center justify-between px-10 md:px-24">
-          <div className="max-w-xl text-left">
-            <h1 className="text-5xl md:text-7xl font-light uppercase tracking-widest text-[#fbbf24] mb-8 leading-tight">
-              &quot;Build an Ark,&quot;<br/><span className="text-white">the voice echoed.</span>
+        <motion.div style={{ opacity: s8, y: driftUp(0.49, 0.56) }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-between px-6 md:px-24">
+          <div className="w-full md:max-w-xl text-center md:text-left mb-8 md:mb-0">
+            <h1 className="text-3xl md:text-7xl font-light uppercase tracking-widest text-[#fbbf24] mb-6 md:mb-8 leading-tight">
+              &quot;Build an Ark,&quot;<br className="hidden md:block"/><span className="text-white">the voice echoed.</span>
             </h1>
-            <div className="pl-6 border-l-2 border-[#fbbf24]/50">
-              <p className="text-2xl tracking-[0.2em] uppercase font-serif italic mb-2">&quot;Gather the seeds of all life.&quot;</p>
-              <p className="text-2xl tracking-[0.2em] uppercase font-serif italic text-[#00ccff]">&quot;Gather the Truth.&quot;</p>
+            <div className="md:pl-6 md:border-l-2 border-[#fbbf24]/50">
+              <p className="text-base md:text-2xl tracking-[0.2em] uppercase font-serif italic mb-2">&quot;Gather the seeds of all life.&quot;</p>
+              <p className="text-base md:text-2xl tracking-[0.2em] uppercase font-serif italic text-[#00ccff]">&quot;Gather the Truth.&quot;</p>
             </div>
           </div>
-          <img src="/matsya-5.png" alt="Tiny Golden Ark" className={`w-[35vw] h-[25vw] ${ABYSS_BORDER_BRUTAL} rounded-xl object-cover`} />
+          <img src="/matsya-5.png" alt="Tiny Golden Ark" className="w-[80vw] md:w-[35vw] h-[25vh] md:h-[25vw] border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(251,191,36,0.15)] rounded-2xl object-cover" />
         </motion.div>
 
         {/* SCENE 9 */}
@@ -297,22 +297,24 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
         </motion.div>
 
         {/* SCENE 12 */}
-        <motion.div style={{ opacity: s12, y: driftRight(0.77, 0.84) }} className="absolute inset-0 flex items-center px-10 md:px-24 flex-row-reverse">
-          <img src="/matsya-6.png" alt="Vasuki Serpent Tether" className="w-[40vw] h-[50vh] border border-[#fbbf24]/30 rounded-[2rem] object-cover shadow-[0_0_40px_rgba(251,191,36,0.1)]" />
-          <div className="flex-1 z-10 text-right pr-16">
-            <h2 className="text-4xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-8">
-              &quot;Tether your ark<br/>to my horn.&quot;
+        <motion.div style={{ opacity: s12, y: driftRight(0.77, 0.84) }} className="absolute inset-0 flex flex-col-reverse md:flex-row-reverse items-center justify-center md:justify-between px-6 md:px-24">
+          <img src="/matsya-6.png" alt="Vasuki Serpent Tether" className="w-[80vw] md:w-[40vw] h-[60vh] md:h-[50vh] border border-[#fbbf24]/30 rounded-[2rem] object-cover shadow-[0_0_40px_rgba(251,191,36,0.1)] mt-8 md:mt-0" />
+          <div className="w-full md:flex-1 z-10 text-center md:text-right pr-0 md:pr-16">
+            <h2 className="text-3xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-4 md:mb-8">
+              &quot;Tether your ark<br className="hidden md:block"/> to my horn.&quot;
             </h2>
-            <div className="inline-block bg-[#00ccff]/10 border border-[#00ccff]/30 backdrop-blur-md px-8 py-4">
-               <p className="text-xl tracking-[0.3em] uppercase text-[#00ccff]">He commanded.</p>
-            </div>
+            <div className=" bg-gradient-to-b from-[#00ccff] to-transparent mb-5" />
+          <div className="text-xl md:text-xl font-serif leading-tight p-3 border-white/10 bg-[#020617]/80 backdrop-blur-2xl rounded-3xl shadow-[0_0_50px_rgba(0,204,255,0.05)] relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00ccff] to-transparent opacity-50" />
+HE COMMANDED
           </div>
+         </div>
         </motion.div>
 
         {/* SCENE 13 */}
-        <motion.div style={{ opacity: s13, y: driftUp(0.84, 0.91) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-10">
-          <img src="/matsya-7.png" alt="Leviathan Pulling Ark" className="w-full max-w-5xl h-[40vh] rounded-[3rem] border-t border-[#00ccff]/50 mb-12 shadow-[0_-20px_50px_rgba(0,204,255,0.1)] object-cover" />
-          <h1 className="text-3xl md:text-5xl font-light uppercase tracking-[0.2em] leading-relaxed max-w-4xl">
+        <motion.div style={{ opacity: s13, y: driftUp(0.84, 0.91) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-10">
+          <img src="/matsya-7.png" alt="Leviathan Pulling Ark" className="w-full max-w-5xl h-[25vh] md:h-[40vh] rounded-[2rem] md:rounded-[3rem] border-t border-[#00ccff]/50 mb-8 md:mb-12 shadow-[0_-20px_50px_rgba(0,204,255,0.1)] object-cover" />
+          <h1 className="text-xl md:text-5xl font-light uppercase tracking-[0.2em] leading-relaxed max-w-4xl">
             Through the chaotic abyss of the end of the world...<br/>
             <span className="font-serif italic text-[#fbbf24]">He guided the light.</span>
           </h1>
