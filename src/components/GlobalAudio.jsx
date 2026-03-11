@@ -24,7 +24,9 @@ export default function GlobalAudio() {
   const isPlayingRef = useRef(false); 
   const audioRef = useRef(typeof Audio !== "undefined" ? new Audio(TRACKS.intro) : null);
   const playPromiseRef = useRef(null); // ✨ This protects the app from crashing!
-
+// Specialized Abyss Borders
+const ABYSS_BORDER = 'border border-[#00ccff]/30 shadow-[0_0_50px_rgba(0,204,255,0.2)]';
+const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(251,191,36,0.15)]';
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.loop = true;

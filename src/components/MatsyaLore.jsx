@@ -6,16 +6,7 @@ import * as THREE from 'three';
 import { Box, Sphere, Cylinder, Torus } from '@react-three/drei';
 import { setGlobalMusic } from './GlobalAudio';
 
-// --------------------------------------------------------
-// 🖼️ HELPER: CINEMATIC IMAGE PLACEHOLDER (Abyss Edition)
-// --------------------------------------------------------
-const ImagePlaceholder = ({ title, width, height, className = "" }) => (
-  <div className={`relative overflow-hidden bg-[#020617]/60 border border-[#00ccff]/20 flex items-center justify-center text-[#00ccff]/40 font-mono text-[10px] uppercase tracking-[0.3em] backdrop-blur-md ${width} ${height} ${className} shadow-[0_0_40px_rgba(0,204,255,0.05)] group`}>
-    <div className="absolute inset-0 bg-gradient-to-b from-[#00ccff]/5 to-transparent opacity-50" />
-    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay" />
-    <span className="relative z-10 drop-shadow-md">[ {title} ]</span>
-  </div>
-);
+
 
 // --------------------------------------------------------
 // 🌊 PART 1: THE 3D ABYSS ENGINE
@@ -115,7 +106,8 @@ const Matsya3DScene = ({ scrollProgress }) => {
 // --------------------------------------------------------
 // 🎬 THE MAIN EDITORIAL SCROLL COMPONENT
 // --------------------------------------------------------
-export default function MatsyaLore({ onBack }) {
+export default function MatsyaLore({ onBack })
+ {
   const containerRef = useRef(null);
   useEffect(() => { window.scrollTo(0, 0); }, []);
   useEffect(() => {
@@ -154,7 +146,9 @@ export default function MatsyaLore({ onBack }) {
   const driftDown = (start, end) => useTransform(sp, [start, end], ["-10vh", "10vh"]);
   const driftLeft = (start, end) => useTransform(sp, [start, end], ["5vw", "-5vw"]);
   const driftRight = (start, end) => useTransform(sp, [start, end], ["-5vw", "5vw"]);
-
+// Specialized Abyss Borders
+const ABYSS_BORDER = 'border border-[#00ccff]/30 shadow-[0_0_50px_rgba(0,204,255,0.2)]';
+const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(251,191,36,0.15)]';
   return (
     <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[1400vh] font-sans">
       
@@ -196,12 +190,12 @@ export default function MatsyaLore({ onBack }) {
               King Manu stood in the river, praying for humanity.
             </p>
           </div>
-          <ImagePlaceholder title="Hands Offering Water" width="w-1/2 max-w-lg" height="h-[50vh]" className="absolute right-10 md:right-24 rounded-[3rem] rounded-bl-none" />
+          <img src="/matsya-1.png" alt="Hands Offering Water" className="w-1/2 max-w-lg h-[50vh] absolute right-10 md:right-24 rounded-[3rem] rounded-bl-none object-cover shadow-[0_0_40px_rgba(0,204,255,0.2)]" />
         </motion.div>
 
         {/* SCENE 3 */}
         <motion.div style={{ opacity: s3, x: driftLeft(0.14, 0.21) }} className="absolute inset-0 flex items-center justify-end px-10 md:px-24">
-          <ImagePlaceholder title="Tiny Glowing Fish" width="w-64" height="h-64" className="absolute left-32 rounded-full border-[#00ccff] shadow-[0_0_50px_rgba(0,204,255,0.2)]" />
+          <img src="/matsya-2.png" alt="Tiny Glowing Fish" className={`w-[20vw] h-[20vw] absolute left-20 ${ABYSS_BORDER} rounded-3xl object-cover`} />
           <div className="max-w-xl text-right z-10">
             <h1 className="text-4xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-6">
               A tiny fish fell<br/>into his palms.
@@ -228,7 +222,7 @@ export default function MatsyaLore({ onBack }) {
         {/* SCENE 5 */}
         <motion.div style={{ opacity: s5, y: driftDown(0.28, 0.35) }} className="absolute inset-0 flex items-end justify-center pb-32">
           <div className="relative w-full max-w-6xl aspect-[21/9] flex items-end p-10">
-            <ImagePlaceholder title="Massive Shadow in Ocean" width="w-full" height="h-full" className="absolute inset-0 rounded-t-[4rem] border-b-0" />
+            <img src="/matsya-3.png" alt="Massive Shadow in Ocean" className="w-full h-full absolute inset-0 rounded-t-[4rem] border-b-0 object-cover" />
             <div className="z-10 bg-black/50 backdrop-blur-xl p-8 rounded-2xl border border-white/10">
               <h1 className="text-3xl md:text-5xl font-light uppercase tracking-widest text-white">He released it into the ocean.</h1>
               <p className="text-xl font-serif italic text-[#00ccff] mt-4">Within days, it eclipsed the sea.</p>
@@ -238,7 +232,7 @@ export default function MatsyaLore({ onBack }) {
 
         {/* SCENE 6 */}
         <motion.div style={{ opacity: s6, y: driftUp(0.35, 0.42) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-10">
-          <ImagePlaceholder title="Giant Glowing Eye" width="w-[80vw] max-w-4xl" height="h-[40vh]" className="mb-12 border-[#fbbf24]/30" />
+          <img src="/matsya-4.png" alt="Giant Glowing Eye" className="w-[80vw] max-w-4xl h-[40vh] mb-12 border border-[#fbbf24]/30 rounded-2xl object-cover shadow-[0_0_40px_rgba(0,204,255,0.1)]" />
           <p className="text-2xl tracking-[0.4em] uppercase opacity-70 mb-4">Manu trembled.</p>
           <h1 className="text-5xl md:text-7xl font-serif italic text-[#fbbf24] drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]">
             &quot;Who are you?&quot;
@@ -271,7 +265,7 @@ export default function MatsyaLore({ onBack }) {
               <p className="text-2xl tracking-[0.2em] uppercase font-serif italic text-[#00ccff]">&quot;Gather the Truth.&quot;</p>
             </div>
           </div>
-          <ImagePlaceholder title="Tiny Golden Ark" width="w-64" height="h-64" className="rounded-full border-[#fbbf24]/50 shadow-[0_0_60px_rgba(251,191,36,0.15)]" />
+          <img src="/matsya-5.png" alt="Tiny Golden Ark" className={`w-[35vw] h-[25vw] ${ABYSS_BORDER_BRUTAL} rounded-xl object-cover`} />
         </motion.div>
 
         {/* SCENE 9 */}
@@ -304,7 +298,7 @@ export default function MatsyaLore({ onBack }) {
 
         {/* SCENE 12 */}
         <motion.div style={{ opacity: s12, y: driftRight(0.77, 0.84) }} className="absolute inset-0 flex items-center px-10 md:px-24 flex-row-reverse">
-          <ImagePlaceholder title="Vasuki Serpent Tether" width="w-[40vw]" height="h-[50vh]" className="border-[#fbbf24]/30 bg-[#fbbf24]/5" />
+          <img src="/matsya-6.png" alt="Vasuki Serpent Tether" className="w-[40vw] h-[50vh] border border-[#fbbf24]/30 rounded-[2rem] object-cover shadow-[0_0_40px_rgba(251,191,36,0.1)]" />
           <div className="flex-1 z-10 text-right pr-16">
             <h2 className="text-4xl md:text-6xl font-light uppercase tracking-widest leading-tight mb-8">
               &quot;Tether your ark<br/>to my horn.&quot;
@@ -317,7 +311,7 @@ export default function MatsyaLore({ onBack }) {
 
         {/* SCENE 13 */}
         <motion.div style={{ opacity: s13, y: driftUp(0.84, 0.91) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-10">
-          <ImagePlaceholder title="Leviathan Pulling Ark" width="w-full max-w-5xl" height="h-[40vh]" className="rounded-[3rem] border-t-[#00ccff]/50 mb-12 shadow-[0_-20px_50px_rgba(0,204,255,0.1)]" />
+          <img src="/matsya-7.png" alt="Leviathan Pulling Ark" className="w-full max-w-5xl h-[40vh] rounded-[3rem] border-t border-[#00ccff]/50 mb-12 shadow-[0_-20px_50px_rgba(0,204,255,0.1)] object-cover" />
           <h1 className="text-3xl md:text-5xl font-light uppercase tracking-[0.2em] leading-relaxed max-w-4xl">
             Through the chaotic abyss of the end of the world...<br/>
             <span className="font-serif italic text-[#fbbf24]">He guided the light.</span>
