@@ -105,17 +105,25 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
   useFrame((state, delta) => {
     const scroll = scrollProgress.get();
 
-    // 🎥 1. CAMERA RIG: Cinematic Dolly & Shake
+    // 🎥 1. CAMERA RIG: Cinematic Dolly & PANNING!
     if (cameraGroupRef.current) {
       let targetZ = THREE.MathUtils.lerp(0, 8, scroll);
       let targetY = 0;
-      
-      // Sink slightly during the blood lake phase, rise for the mountain
-      if (scroll > 0.65 && scroll < 0.85) targetY = -4;
-      else if (scroll >= 0.85) { targetY = 5; targetZ = -5; } // Push into the mountain
+      let targetX = 0; // ✨ NEW: Horizontal panning!
 
-      cameraGroupRef.current.position.z = THREE.MathUtils.lerp(cameraGroupRef.current.position.z, targetZ, delta * 2);
+      // Pan camera left so 3D objects sit on the RIGHT (Makes room for S4 Image)
+      if (scroll > 0.12 && scroll < 0.22) targetX = -3.5;
+      // Pan camera right so the 3D Axe sits on the LEFT (Makes room for S9 Image)
+      else if (scroll > 0.35 && scroll < 0.48) targetX = 3.5;
+      // Sink for the blood lake (S16 - Center it)
+      else if (scroll > 0.65 && scroll < 0.85) { targetY = -4; targetX = 0; }
+      // Push into the mountain, pan right so the mountain sits LEFT (Makes room for S19 Image)
+      else if (scroll >= 0.85) { targetY = 5; targetZ = -5; targetX = 4; }
+
+      // Smoothly animate the camera's X, Y, and Z axes
+      cameraGroupRef.current.position.x = THREE.MathUtils.lerp(cameraGroupRef.current.position.x, targetX, delta * 3);
       cameraGroupRef.current.position.y = THREE.MathUtils.lerp(cameraGroupRef.current.position.y, targetY, delta * 2);
+      cameraGroupRef.current.position.z = THREE.MathUtils.lerp(cameraGroupRef.current.position.z, targetZ, delta * 2);
     }
 
     // 🧊 2. THE SOUL (Octahedron Kamadhenu)
@@ -135,16 +143,19 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
       if (isSnatching) soulOrbRef.current.rotation.x += delta * 15; // Panics
     }
 
-    // 🫴 3. THE CORRUPTION (100 Arms swarming the soul)
+// 🫴 3. THE CORRUPTION (100 Arms swarming the soul)
     if (armsRef.current) {
       const isSnatching = scroll > 0.15 && scroll < 0.25;
-      const isThreatening = scroll >= 0.25 && scroll < 0.45;
-      const isSevered = scroll >= 0.45;
+      // 👇 We lock the threat phase exactly to the "SEVERED" text timing (0.49)
+      const isThreatening = scroll >= 0.25 && scroll < 0.49; 
+      const isSevered = scroll >= 0.49;
 
       armsData.forEach((data, i) => {
         let currentX = data.x;
         let currentY = data.y;
         let currentZ = data.z;
+        let rotX = data.rx;
+        let rotY = data.ry;
 
         if (isSnatching) {
           // Collapse on the Soul
@@ -155,26 +166,27 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
           currentX = THREE.MathUtils.lerp(currentX, data.x, delta);
           currentY = THREE.MathUtils.lerp(currentY, data.y + Math.sin(state.clock.elapsedTime * data.speed) * 0.5, delta);
         } else if (isSevered) {
-          // The Swing hits! They fall and tumble
-          currentY -= delta * 20 * data.speed; 
-          currentX += Math.sign(currentX) * delta * 5; 
-          data.rx += 0.3; 
-          data.ry += 0.3;
+          // 🔥 The absolute shatter! Using scroll math so they violently explode outwards and down!
+          const shatterForce = (scroll - 0.49) * 80; 
+          currentY = data.y - (shatterForce * data.speed); 
+          currentX = data.x + (Math.sign(data.x) * shatterForce * 0.5); 
+          rotX = data.rx + shatterForce; 
+          rotY = data.ry + shatterForce;
         }
 
         dummy.position.set(currentX, currentY, currentZ);
         if (!isSevered) dummy.lookAt(0, 0, 5); 
-        dummy.rotation.x += data.rx;
-        dummy.rotation.y += data.ry;
+        dummy.rotation.x = rotX;
+        dummy.rotation.y = rotY;
         
         let scale = isMobile ? 0.6 : 1.2;
+        if (scroll > 0.65) scale = 0; // Purges them from the scene once they fall off-screen to save FPS!
         dummy.scale.set(0.1, 0.1, scale * 3);
         dummy.updateMatrix();
         armsRef.current.setMatrixAt(i, dummy.matrix);
       });
       armsRef.current.instanceMatrix.needsUpdate = true;
     }
-
     // 🔺 4. SHIVA'S FORGE (Massive Tetrahedron)
     if (forgeRef.current) {
       const active = scroll > 0.30 && scroll < 0.55 ? 1 : 0;
@@ -246,14 +258,29 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
     if (floorRef.current) {
       let targetColor = new THREE.Color("#050505");
       let emissiveColor = new THREE.Color("#000000");
+      let targetY = -5; // Base dry floor height
+      let targetRoughness = 0.8; // Dry, matte ground
 
+      // 🌊 The Blood Lake Floods!
       if (scroll > 0.62 && scroll < 0.85) {
-        targetColor = new THREE.Color("#3a0000"); // Deep crimson
-        emissiveColor = new THREE.Color("#1a0000");
+        targetColor = new THREE.Color("#660000"); // Rich, visceral blood red
+        
+        // Adds a creepy, breathing pulse to the glow
+        const pulse = Math.abs(Math.sin(state.clock.elapsedTime * 2)) * 0.3;
+        emissiveColor = new THREE.Color().setRGB(0.2 + pulse, 0, 0); 
+        
+        // The lake physically rises up and gently undulates!
+        targetY = -3.5 + Math.sin(state.clock.elapsedTime * 1.5) * 0.2; 
+        
+        // Drops roughness to 0 so it instantly looks like a wet, reflective mirror
+        targetRoughness = 0.0; 
       }
 
+      // Smoothly animate everything together
+      floorRef.current.position.y = THREE.MathUtils.lerp(floorRef.current.position.y, targetY, delta * 2);
       floorRef.current.material.color.lerp(targetColor, delta * 3);
       floorRef.current.material.emissive.lerp(emissiveColor, delta * 3);
+      floorRef.current.material.roughness = THREE.MathUtils.lerp(floorRef.current.material.roughness, targetRoughness, delta * 2);
     }
 
     // 🏔️ 8. MOUNT MAHENDRAGIRI (Colossal Icosahedron)
@@ -271,15 +298,15 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
         <meshStandardMaterial color="#ffffff" emissive="#fbbf24" emissiveIntensity={1.5} />
       </Octahedron>
 
-      {/* 🫴 The 100 Arms */}
+      {/* 🫴 The 100 Arms (Now Dark, Menacing Red! 🩸) */}
       <instancedMesh ref={armsRef} args={[null, null, 100]}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#334155" emissive="#110000" emissiveIntensity={0.5} metalness={0.9} roughness={0.2} />
+        <meshStandardMaterial color="#0B0000" missive="#EE1313FD" emissiveIntensity={1.0} metalness={0.9} roughness={0.2} />
       </instancedMesh>
 
       {/* 🔺 The Forge */}
       <Tetrahedron ref={forgeRef} args={[1, 0]} position={[0, 0, -5]}>
-        <meshStandardMaterial color="#ef4444" wireframe transparent emissive="#ff0000" emissiveIntensity={2} />
+        <meshStandardMaterial color="#E33737" wireframe transparent emissive="#E72B2B" emissiveIntensity={2} />
       </Tetrahedron>
 
       {/* 🪓 The Monolithic Parashu */}
@@ -300,7 +327,7 @@ const ParashuMasterpiece = ({ scrollProgress, isMobile }) => {
 
       {/* 🩸 The Floor */}
       <Plane ref={floorRef} args={[150, 150]} rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, -5]}>
-        <meshStandardMaterial color="#050505" metalness={0.9} roughness={0.05} />
+        <meshStandardMaterial color="#DC4C4C" metalness={0.9} roughness={0.05} />
       </Plane>
 
       {/* 🏔️ Mount Mahendragiri */}
@@ -337,7 +364,8 @@ const CinematicEffects = ({ scrollProgress, isMobile }) => {
       <EffectComposer disableNormalPass>
         <Bloom luminanceThreshold={0.2} intensity={1.5} mipmapBlur={false} />
         <Vignette offset={0.5} darkness={0.8} />
-        {glitch && <Glitch delay={[0, 0.2]} duration={[0.1, 0.3]} strength={[0.05, 0.1]} active={glitch} />}
+        {/* Keep it mounted in the tree, just let the 'active' prop do the work! */}
+<Glitch delay={[0, 0.2]} duration={[0.1, 0.3]} strength={[0.05, 0.1]} active={glitch} />
       </EffectComposer>
     );
   }
@@ -348,7 +376,8 @@ const CinematicEffects = ({ scrollProgress, isMobile }) => {
       <Vignette offset={0.5} darkness={0.8} />
       <ChromaticAberration offset={[0.003, 0.003]} />
       <Noise opacity={0.2} />
-      {glitch && <Glitch delay={[0, 0.2]} duration={[0.1, 0.3]} strength={[0.05, 0.1]} active={glitch} />}
+      {/* Keep it mounted in the tree, just let the 'active' prop do the work! */}
+<Glitch delay={[0, 0.2]} duration={[0.1, 0.3]} strength={[0.05, 0.1]} active={glitch} />
     </EffectComposer>
   );
 };
@@ -371,15 +400,14 @@ export default function ParshuramaLore({ onBack }) {
   }, []);
 
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const sp = useSpring(scrollYProgress, { stiffness: 40, damping: 20, mass: 1 });
+  // 🔥 FIX 1: Tightened the absolute life out of this spring! It will now snap instantly to your scroll position without any bouncing or falling behind.
+  const sp = useSpring(scrollYProgress, { stiffness: 300, damping: 40, mass: 1, restDelta: 0.001 });
 
   const bgColor = useTransform(sp, 
     [0.0, 0.3, 0.6, 0.7, 0.85, 1.0], 
     ["#030303", "#050202", "#1a0000", "#2a0000", "#030303", "#000000"]
   );
   
-  const shake = useTransform(sp, (p) => (p > 0.62 && p < 0.70) ? Math.sin(p * 1000) * 15 : 0);
-
   // 🧮 20 PERFECTLY SPACED CINEMATIC BEATS
   const o = (start, peak1, peak2, end) => useTransform(sp, [start, peak1, peak2, end], [0, 1, 1, 0]);   
   const s1  = o(0.00, 0.01, 0.03, 0.04); 
@@ -426,7 +454,7 @@ export default function ParshuramaLore({ onBack }) {
       </div>
 
       {/* EDITORIAL HTML LAYER - AURA FARMING EDITION */}
-      <motion.div style={{ x: shake }} className="sticky top-0 w-full h-screen overflow-hidden z-10 pointer-events-none">  
+      <motion.div className="sticky top-0 w-full h-screen overflow-hidden z-10 pointer-events-none">  
         
         {/* S1 */}
         <motion.div style={{ opacity: s1, y: driftUp(0, 0.04) }} className="absolute inset-0 flex items-center px-6 md:px-24">
@@ -436,11 +464,18 @@ export default function ParshuramaLore({ onBack }) {
           </div>
         </motion.div>
 
-        {/* S2 */}
-        <motion.div style={{ opacity: s2, y: driftDown(0.04, 0.09) }} className="absolute inset-0 flex flex-col justify-center px-6 md:px-24 text-right">
-          <p className="text-2xl md:text-4xl font-serif italic text-white/60 border-r-4 border-[#ef4444] pr-6 max-w-2xl ml-auto">
-            A scholar by birth. <br/>A weapon of mass destruction by choice.
-          </p>
+        {/* S2 - THE AVATAR REVEAL (Snaps to the left, pushes text to the right!) */}
+        <motion.div style={{ opacity: s2, y: driftDown(0.04, 0.09) }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-start px-6 md:px-24 text-left">
+          {/* I made this placeholder taller (h-[500px]) like a majestic character poster! */}
+<img 
+            src="/AVATAR_PARASHURAMA.png" 
+            alt="Avatar Parashurama" 
+            className="w-[80vw] md:w-[400px] h-[500px] object-cover mb-8 md:mb-0 md:mr-16 rounded-t-full border-b-0 border-2 border-[#fbbf24]/20 opacity-90 shadow-[0_0_50px_rgba(251,191,36,0.15)]" 
+          />          <div className="max-w-2xl z-10">
+            <p className="text-2xl md:text-4xl font-serif italic text-white/60 border-l-4 border-[#ef4444] pl-6">
+              A scholar by birth. <br/>A weapon of mass destruction by choice.
+            </p>
+          </div>
         </motion.div>
 
         {/* S3 */}
@@ -449,13 +484,17 @@ export default function ParshuramaLore({ onBack }) {
           <p className="text-xl tracking-[0.3em] uppercase opacity-50 mt-4 max-w-2xl">The ruling class, Kshatriyas, drunk on unchecked power, believed they were untouchable.</p>
         </motion.div>
 
-        {/* S4 */}
-        <motion.div style={{ opacity: s4, x: offsetRight }} className="absolute inset-0 flex items-center justify-end px-6 md:px-24 text-right">
-          <div className="max-w-xl z-10">
+        {/* S4 - Snaps to the LEFT (3D is on the Right) */}
+        <motion.div style={{ opacity: s4, x: offsetLeft }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-start px-6 md:px-24 text-left">
+          <div className="max-w-xl z-10 md:mr-12">
             <h1 className="text-5xl md:text-7xl font-serif uppercase text-[#fbbf24] leading-none mb-6">The Theft.</h1>
-            <p className="text-2xl tracking-widest font-light">King Kartavirya Arjuna stole from the peaceful hermitage, assuming there would be zero consequences.</p>
+            <p className="text-2xl tracking-widest font-light mb-8 md:mb-0">King Kartavirya Arjuna stole from the peaceful hermitage, assuming there would be zero consequences.</p>
           </div>
-        </motion.div>
+<img 
+            src="/HERMITAGE_BREACHED.png" 
+            alt="Hermitage Breached" 
+            className="w-[80vw] md:w-[350px] h-auto object-contain rounded-xl border border-[#ef4444]/20 shadow-[0_0_40px_rgba(239,68,68,0.2)]" 
+          />        </motion.div>
 
         {/* S5 */}
         <motion.div style={{ opacity: s5, y: driftUp(0.19, 0.24) }} className="absolute inset-0 flex items-center justify-center text-center px-6">
@@ -465,7 +504,7 @@ export default function ParshuramaLore({ onBack }) {
         {/* S6 */}
         <motion.div style={{ opacity: s6, y: driftDown(0.24, 0.29) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
            <h1 className="text-3xl md:text-5xl font-light uppercase tracking-widest mb-8 max-w-4xl">
-             The arrogant King expected the Brahmin boy to just sit down, fold his hands, and pray for karma.
+             Expected the Brahmin boy would just sit down,            fold his hands,       and pray for karma.
            </h1>
         </motion.div>
 
@@ -484,7 +523,11 @@ export default function ParshuramaLore({ onBack }) {
 
         {/* S9 */}
         <motion.div style={{ opacity: s9, y: driftUp(0.39, 0.44) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h1 className="text-6xl md:text-[8vw] font-black uppercase tracking-tighter text-white mb-6">THE PARASHU.</h1>
+<img 
+            src="/COSMIC_AXE_MANIFEST.png" 
+            alt="The Cosmic Axe" 
+            className="w-[80vw] md:w-[450px] h-auto object-contain mb-8 rounded-xl border border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.1)] mix-blend-lighten" 
+          />         <h1 className="text-6xl md:text-[8vw] font-black uppercase tracking-tighter text-white mb-6">THE PARASHU.</h1>
           <p className="text-xl tracking-[0.3em] uppercase opacity-50">Forged not for peace, but for cosmic correction.</p>
         </motion.div>
 
@@ -521,11 +564,15 @@ export default function ParshuramaLore({ onBack }) {
            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-widest text-[#ef4444]">He hunted entire 21 GENERATIONS OF corrupt ruler on the planet.</h2>
         </motion.div>
 
-        {/* S16 */}
-        <motion.div style={{ opacity: s16, y: driftDown(0.74, 0.79) }} className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-3xl md:text-6xl font-serif italic text-white mb-6">Five lakes were filled to the brim with their blood.</h1>
-            <p className="text-2xl font-mono text-[#ef4444] uppercase tracking-widest">// SAMANTAPANCHAKA //</p>
-        </motion.div>
+        {/* S16 - Snaps to the TOP (3D Lake is swelling at the Bottom) */}
+        <motion.div style={{ opacity: s16, y: driftDown(0.74, 0.79) }} className="absolute inset-0 flex flex-col items-center justify-start pt-32 px-6 text-center">
+             <h1 className="text-3xl md:text-5xl font-serif italic text-white mb-6 max-w-4xl">Five lakes were filled to the brim with their blood.</h1>
+             <p className="text-2xl font-mono text-[#ef4444] uppercase tracking-widest mb-8">// SAMANTAPANCHAKA //</p>
+<img 
+            src="/LAKES_OF_CRIMSON.png" 
+            alt="Lakes of Crimson Blood" 
+            className="w-[80vw] md:w-[600px] h-auto object-contain rounded-2xl border border-[#ef4444]/40 shadow-[0_0_60px_rgba(239,68,68,0.3)]" 
+          />       </motion.div>
 
         {/* S17 */}
         <motion.div style={{ opacity: s17, x: offsetLeft }} className="absolute inset-0 flex flex-col justify-center px-6 md:px-24">
@@ -542,10 +589,14 @@ export default function ParshuramaLore({ onBack }) {
           <p className="text-xl md:text-3xl font-light tracking-[0.2em] text-white/80 max-w-2xl">Having cleansed the earth, he threw his axe into the ocean.</p>
         </motion.div>
 
-        {/* S19 */}
-        <motion.div style={{ opacity: s19, y: driftUp(0.89, 0.94) }} className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+       {/* S19 - Snaps to the RIGHT (3D Mountain is on the Left) */}
+        <motion.div style={{ opacity: s19, x: offsetRight }} className="absolute inset-0 flex flex-col items-end justify-center text-right px-6 md:px-24">
           <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-[0.4em] text-[#FFFF00] mb-6">Mount Mahendragiri.</h2>
-          <p className="text-2xl md:text-4xl font-serif italic text-white/100 max-w-4xl">
+          <img 
+            src="/IMMORTAL_VIGIL.png" 
+            alt="Mount Mahendragiri Vigil" 
+            className="w-[90vw] md:w-[500px] h-auto object-contain mb-8 opacity-70 rounded-xl border border-[#fbbf24]/20 shadow-[0_0_50px_rgba(251,191,36,0.15)] mix-blend-screen" 
+          />     <p className="text-xl md:text-3xl font-serif italic text-white/100 max-w-2xl">
             He waits. Immortal. Ready to train the final Avatar when KALYUG reaches its absolute peak.
           </p>
         </motion.div>
