@@ -14,7 +14,7 @@ import LustBreaker from './LustBreaker';
 import MayaProtocol from './MayaProtocol';
 import KarmaProtocol from './KarmaProtocol';
 import { setGlobalMusic } from './GlobalAudio'; // Make sure this is at the top of the file!
-
+import RamaLore from './RamaLore';
 // --------------------------------------------------------
 // 📜 THE LORE DATA
 // --------------------------------------------------------
@@ -471,14 +471,14 @@ export default function CosmicHub({ onBack }) {
       return <KarmaProtocol onEnterHub={() => setActiveLore(null)} />;
     }
     
-    // 2. The Avatars
+    // 2. The Avatarsx
     if (activeLore === 'V') return <VamanaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'I') return <MatsyaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'II') return <KurmaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'III') return <VarahaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'IV') return <NarasimhaLore onBack={() => setActiveLore(null)} />;
     if (activeLore === 'VI') return <ParshuramaLore onBack={() => setActiveLore(null)} />;
-    
+     if (activeLore === 'VII') return <RamaLore onBack={() => setActiveLore(null)} />;
     // 3. The Default Fallback
     const activeAvatarData = DASHAVATARA.find(av => av.id === activeLore);
     
