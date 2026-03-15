@@ -9,17 +9,32 @@ import CinematicCursor from './CinematicCursor';
 import { setGlobalMusic } from './GlobalAudio';
 
 // --------------------------------------------------------
-// 🖼️ CINEMATIC IMAGE PLACEHOLDER
+// 🖼️ CINEMATIC IMAGE ENGINE (Upgraded from Placeholder)
 // --------------------------------------------------------
-const ImagePlaceholder = ({ title, width, height, color = "fbbf24", className = "" }) => (
-  <div 
-    className={`relative overflow-hidden bg-black/40 border border-[#${color}]/30 flex items-center justify-center text-[#${color}]/60 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] backdrop-blur-md ${width} ${height} ${className} shadow-[0_0_30px_rgba(0,0,0,0.5)] group z-0`}
-  >
-    <div className={`absolute inset-0 bg-gradient-to-br from-[#${color}]/10 via-transparent to-black opacity-60`} />
-    <span className="relative z-10 drop-shadow-md mix-blend-screen text-center px-4">[ IMAGE: {title} ]</span>
-  </div>
-);
+const ImagePlaceholder = ({ title, width, height, className }) => {
+  // This automatically grabs the image from your public/images folder using the title!
+  // If your images are PNGs, just change the ".jpg" to ".png" here:
+  const imagePath = `/${title}.png`;
 
+  return (
+    <motion.div 
+      initial={{ filter: "brightness(0.5) blur(10px)" }}
+      whileInView={{ filter: "brightness(1) blur(0px)" }}
+      viewport={{ once: false, margin: "-100px" }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+      className={`relative overflow-hidden ${width} ${height} ${className}`}
+    >
+      <img 
+        src={imagePath} 
+        alt={title} 
+        className="w-full h-full object-cover rounded-2xl shadow-2xl"
+      />
+      {/* Adds a premium cinematic vignette/overlay on top of your image */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl pointer-events-none" />
+      <div className="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none mix-blend-overlay" />
+    </motion.div>
+  );
+};
 // --------------------------------------------------------
 // 💥 CINEMATIC SFX TYPOGRAPHY ENGINE
 // --------------------------------------------------------
@@ -260,11 +275,11 @@ const DynamicAtmosphere = ({ scrollProgress }) => {
       // 🍃 The Forest (Green/Gold Pollen)
       speedMult = 0.5; targetColor.set("#4ade80"); targetOpacity = 0.5;
     } 
-    else if (p >= 0.653 && p < 0.704) {
+    else if (p >= 0.653 && p < 0.717) {
       // 🩸 Surpanakha Rage (Red Sparks)
       speedMult = 1.5; direction = 1; targetColor.set("#ef4444"); targetOpacity = 0.7;
     } 
-    else if (p >= 0.704 && p < 0.763) {
+    else if (p >= 0.717 && p < 0.763) {
       // ✨ Golden Deer (Hypnotic, slow, bright gold dust)
       speedMult = 0.2; targetColor.set("#fef08a"); targetOpacity = 0.8;
     } 
@@ -497,8 +512,8 @@ useFrame((state, delta) => {
 
     // --- PHASE 2 DYNAMIC VIBE LIGHTS ---
     else if (p >= 0.58 && p < 0.653) { ambientHex = "#064e3b"; p1Hex = "#fbbf24"; intensity1 = 15.0; } // Forest Green
-    else if (p >= 0.653 && p < 0.704) { ambientHex = "#450a0a"; p1Hex = "#ef4444"; intensity1 = 25.0; } // Surpanakha Crimson
-    else if (p >= 0.704 && p < 0.763) { ambientHex = "#422006"; p1Hex = "#fef08a"; intensity1 = 35.0; } // Deer/Illusion Gold
+    else if (p >= 0.653 && p < 0.716) { ambientHex = "#450a0a"; p1Hex = "#ef4444"; intensity1 = 25.0; } // 🔴 EXTENDED: Surpanakha Crimson
+    else if (p >= 0.716 && p < 0.763) { ambientHex = "#422006"; p1Hex = "#fef08a"; intensity1 = 35.0; } // 🔴 SHIFTED: Deer/Illusion Gold
     else if (p >= 0.763 && p < 0.823) { ambientHex = "#000000"; p1Hex = "#ffffff"; intensity1 = 5.0; } // Abduction Pitch Black
     else if (p >= 0.823 && p < 0.865) { ambientHex = "#030712"; p1Hex = "#60a5fa"; intensity1 = 10.0; } // Crying Cold Blue
     else if (p >= 0.865 && p < 0.933) { ambientHex = "#291c13"; p1Hex = "#fb923c"; intensity1 = 20.0; } // Kishkindha Earthy
@@ -551,7 +566,7 @@ export default function RamaLore({ onBack }) {
       0.0, 0.285, 0.295, 0.49, 0.51, 0.57,
       // Phase 2 Timestamps
       0.58, 0.65, // Dandaka Forest (Deep Green)
-      0.66, 0.70, // Surpanakha (Deep Blood Red)
+      0.66, 0.716, // 🔴 EXTENDED: Surpanakha (Deep Blood Red)
       0.71, 0.76, // Golden Deer (Sickly Brown/Gold)
       0.77, 0.82, // The Abduction (Pitch Black Void)
       0.83, 0.87, // Crying/Madness (Cold, Dead Grey/Blue)
@@ -696,7 +711,10 @@ export default function RamaLore({ onBack }) {
         {/* S7: The Swayamvar Starts */}
         <motion.div style={{ opacity: s7, y: driftUp(0.12, 0.15) }} className="absolute inset-0 flex flex-col justify-end items-center text-center pb-[15vh] px-6 md:px-24 z-10">
           <p className="text-xl md:text-3xl font-light text-white/80 max-w-2xl leading-relaxed mb-4">To claim Princess Sita, a divine challenge is set.</p>
+                    <ImagePlaceholder title="PINAKA" color="3b82f6" width="w-[85vw] md:w-[450px]" height="h-[20vh] md:h-[20vh] min-h-[100px]" className="mb-4 md:mb-6 rounded-2xl shadow-[0_0_80px_rgba(59,130,246,0.4)] shrink-0 object-cover" />
+
           <h2 className="text-[clamp(3rem,8vw,8rem)] font-black uppercase tracking-tighter text-[#fbbf24] leading-none max-w-[90vw]">THE PINAKA.</h2>
+
           <p className="text-lg md:text-2xl font-serif italic text-white/60 mt-4">The colossal bow of Lord Shiva.</p>
         </motion.div>
 
@@ -776,8 +794,11 @@ export default function RamaLore({ onBack }) {
 
         {/* S17: The Debt */}
         <motion.div style={{ opacity: s17, y: driftUp(0.32, 0.35) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
+                    <ImagePlaceholder title="QUEEN_HELP" color="3b82f6" width="w-[85vw] md:w-[450px]" height="h-[25vh] md:h-[35vh] min-h-[150px]" className="mb-4 md:mb-6 rounded-2xl shadow-[0_0_80px_rgba(59,130,246,0.4)] shrink-0 object-cover" />
+
           <h3 className="text-[clamp(2.5rem,6vw,6rem)] font-black uppercase tracking-widest text-[#ef4444] mb-4 leading-none">THE ANCIENT DEBT.</h3>
           <p className="text-xl md:text-3xl font-serif italic text-white/80 max-w-3xl leading-relaxed">Years ago, Kaikeyi saved the King on a bloody battlefield. He promised her two undeniable boons.</p>
+       
         </motion.div>
 
         {/* S18: The Trap */}
@@ -916,14 +937,24 @@ export default function RamaLore({ onBack }) {
           </p>
         </motion.div>
 
-        <motion.div style={{ opacity: s39, x: offsetLeft }} className="absolute inset-0 flex flex-col justify-center items-start text-left px-6 md:px-24">
-          <p className="text-2xl md:text-5xl font-light text-white max-w-3xl leading-relaxed">
+        <motion.div style={{ opacity: s39, x: offsetLeft }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-start text-left px-6 md:px-24">
+          <ImagePlaceholder title="SURPANAKHA_RAGE" color="ef4444" width="w-[80vw] md:w-[350px]" height="h-[30vh] md:h-[350px]" className="mb-8 md:mb-0 md:mr-12 rounded-2xl shrink-0 object-cover shadow-[0_0_80px_rgba(239,68,68,0.3)]" />
+          <p className="text-2xl md:text-5xl font-light text-white max-w-3xl leading-relaxed z-10">
             When he gently rejects her... she flies into a jealous, violent rage. She lunges for Sita.
           </p>
         </motion.div>
 
-        <motion.div style={{ opacity: s40, y: driftUp(0.72, 0.75) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 z-20">
-          <SFXText word="SLASH." color="ef4444" />
+        <motion.div style={{ opacity: s40, y: driftUp(0.72, 0.75) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 z-20 overflow-hidden">
+          
+          {/* 🔥 THE PHYSICAL SLASH EFFECT */}
+          <motion.div 
+            style={{ scaleX: s40, opacity: s40 }} 
+            className="absolute w-[150vw] h-1 md:h-2 bg-white shadow-[0_0_100px_4px_rgba(239,68,68,1)] rotate-[-15deg] origin-left z-0"
+          />
+
+          <div className="relative z-10">
+            <SFXText word="SLASH." color="ef4444" />
+          </div>
         </motion.div>
 
         <motion.div style={{ opacity: s41, x: offsetRight }} className="absolute inset-0 flex flex-col justify-center items-end text-right px-6 md:px-24">
@@ -986,7 +1017,7 @@ export default function RamaLore({ onBack }) {
         {/* --- The Abduction Sequence --- */}
         <motion.div style={{ opacity: s50, x: offsetLeft }} className="absolute inset-0 flex flex-col justify-center items-start text-left px-6 md:px-24">
           <p className="text-xl md:text-4xl font-serif italic text-white/90 max-w-3xl leading-relaxed border-l border-[#ef4444] pl-8">
-            Sita is terrified.         She begs Lakshmana to go. He knows his brother cannot be harmed by mortal things, but he cannot disobey a mother's panicked order.
+            Sita is terrified. She begs Lakshmana to go. He knows his brother cannot be harmed by mortal things, but he cannot disobey a mother's panicked order.
           </p>
         </motion.div>
 
@@ -1009,14 +1040,16 @@ export default function RamaLore({ onBack }) {
           </p>
         </motion.div>
 
-        <motion.div style={{ opacity: s54, y: driftUp(0.89, 0.92) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 z-20">
-          <SFXText word="SNAP." color="ef4444" />
-        </motion.div>
-
         <motion.div style={{ opacity: s55, x: offsetRight }} className="absolute inset-0 flex flex-col justify-center items-end text-right px-6 md:px-24">
           <p className="text-2xl md:text-5xl font-light text-white max-w-3xl leading-relaxed">
             She steps over the line to feed him.
           </p>
+        </motion.div>
+
+        <motion.div style={{ opacity: s54, y: driftUp(0.89, 0.92) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 z-20">
+        <ImagePlaceholder title="RAVANA_ABDUCTION" color="3b82f6" width="w-[85vw] md:w-[450px]" height="h-[25vh] md:h-[35vh] min-h-[150px]" className="mb-4 md:mb-6 rounded-2xl shadow-[0_0_80px_rgba(59,130,246,0.4)] shrink-0 object-cover" />
+
+          <SFXText word="SNAP." color="ef4444" />
         </motion.div>
 
         <motion.div style={{ opacity: s56, y: driftDown(0.91, 0.94) }} className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 z-10 overflow-hidden">
@@ -1047,6 +1080,7 @@ export default function RamaLore({ onBack }) {
         </motion.div>
 
         <motion.div style={{ opacity: s60, x: offsetLeft }} className="absolute inset-0 flex flex-col justify-center items-start text-left px-6 md:px-24">
+        <ImagePlaceholder title="RAMA_SORROW" color="ef4444" width="w-[80vw] md:w-[350px]" height="h-[200px] md:h-[250px]" className="mb-6 md:mb-0 md:ml-8 rounded-2xl shrink-0" />
           <p className="text-xl md:text-4xl font-light text-white/90 max-w-3xl leading-relaxed bg-black/80 p-10 border border-white/20 backdrop-blur-md">
             The Creator of the Universe collapses into the mud. He physically weeps like a shattered, broken man, begging the trees to tell him where his wife is.
           </p>
@@ -1127,7 +1161,7 @@ export default function RamaLore({ onBack }) {
         </motion.div>
 
         <motion.div style={{ opacity: s73, x: offsetRight }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-end text-right px-6 md:px-24 z-10">
-          <ImagePlaceholder title="HANUMAN_KNEELING" color="f97316" width="w-[80vw] md:w-[400px]" height="h-[25vh] md:h-[300px]" className="mb-8 md:mb-0 md:mr-12 rounded-2xl shrink-0 object-cover shadow-[0_0_80px_rgba(249,115,22,0.5)]" />
+          <ImagePlaceholder title=" " color="f97316" width="w-[80vw] md:w-[400px]" height="h-[25vh] md:h-[300px]" className="mb-8 md:mb-0 md:mr-12 rounded-2xl shrink-0 object-cover shadow-[0_0_80px_rgba(249,115,22,0.5)]" />
           <div className="z-10 text-center md:text-right w-full md:max-w-xl">
             <h3 className="text-[clamp(2.5rem,6vw,6rem)] font-black uppercase tracking-widest text-white mb-4 leading-none break-words whitespace-normal">THE ULTIMATE DEVOTEE.</h3>
             <p className="text-xl md:text-3xl font-serif italic text-white/80">
