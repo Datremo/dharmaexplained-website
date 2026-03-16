@@ -13,6 +13,8 @@ const TRACKS = {
   narasimha: "/narasimha.mp3",
   vamana: "/vamana.mp3",
   parshurama: "/parshurama.mp3",
+  // ✨ ADD THIS: A special flag that tells the global audio to step aside!
+  rama_cinematic: "DELEGATE", 
 };
 
 export const setGlobalMusic = (themeName) => {
@@ -23,10 +25,11 @@ export default function GlobalAudio() {
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false); 
   const audioRef = useRef(typeof Audio !== "undefined" ? new Audio(TRACKS.intro) : null);
-  const playPromiseRef = useRef(null); // ✨ This protects the app from crashing!
-// Specialized Abyss Borders
-const ABYSS_BORDER = 'border border-[#00ccff]/30 shadow-[0_0_50px_rgba(0,204,255,0.2)]';
-const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(251,191,36,0.15)]';
+  const playPromiseRef = useRef(null); 
+  
+  // ✨ ADD THIS: A ref to know if a local page is handling its own audio
+  const isDelegatedRef = useRef(false);
+
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.loop = true;
@@ -34,12 +37,23 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
 
     const handleSwitch = async (e) => {
       const newTheme = e.detail;
+      
+      // ✨ THE DELEGATION MAGIC
+      if (TRACKS[newTheme] === "DELEGATE") {
+        isDelegatedRef.current = true;
+        audioRef.current.pause(); // Shut up the global track
+        // Immediately tell the new page what the button status is
+        window.dispatchEvent(new CustomEvent('syncAudioState', { detail: isPlayingRef.current }));
+        return;
+      }
+      
+      // If it's a normal lore page, take control back!
+      isDelegatedRef.current = false;
       const newSrc = TRACKS[newTheme] || TRACKS.kshirsagar; 
 
       if (newSrc && audioRef.current.src !== window.location.origin + newSrc) {
         const wasPlaying = isPlayingRef.current;
         
-        // ✨ MAGIC FIX: Wait for any currently loading audio to finish before switching
         if (playPromiseRef.current) {
           try { await playPromiseRef.current; } catch (err) {} 
         }
@@ -48,7 +62,7 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
         audioRef.current.src = newSrc;
         audioRef.current.load();
         
-        if (wasPlaying) {
+        if (wasPlaying && !isDelegatedRef.current) {
           playPromiseRef.current = audioRef.current.play();
           playPromiseRef.current.catch(err => console.log("Audio transition smoothed."));
         }
@@ -63,16 +77,20 @@ const ABYSS_BORDER_BRUTAL = 'border border-[#fbbf24]/50 shadow-[0_0_60px_rgba(25
     if (!audioRef.current) return;
 
     if (isPlayingRef.current) {
-      audioRef.current.pause();
+      if (!isDelegatedRef.current) audioRef.current.pause(); // Only pause if not delegated
       isPlayingRef.current = false;
       setIsPlaying(false);
     } else {
-      playPromiseRef.current = audioRef.current.play();
-      playPromiseRef.current.then(() => {
-        isPlayingRef.current = true;
-        setIsPlaying(true);
-      }).catch(err => console.error("Audio blocked by browser:", err));
+      isPlayingRef.current = true;
+      setIsPlaying(true);
+      if (!isDelegatedRef.current) { // Only play global track if not delegated
+        playPromiseRef.current = audioRef.current.play();
+        playPromiseRef.current.catch(err => console.error("Audio blocked:", err));
+      }
     }
+    
+    // ✨ BROADCAST THE BUTTON CLICK SO RAMA LORE CAN HEAR IT!
+    window.dispatchEvent(new CustomEvent('syncAudioState', { detail: isPlayingRef.current }));
   };
 
   return (

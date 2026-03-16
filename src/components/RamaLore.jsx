@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { TorusKnot, Sparkles, Stars } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration } from '@react-three/postprocessing';
@@ -548,12 +548,106 @@ const RamaEffects = ({ isMobile }) => {
 };
 
 // --------------------------------------------------------
+// 🎵 CINEMATIC MULTI-TRACK AUDIO ENGINE
+// --------------------------------------------------------
+// Remove the `soundOn` prop, it will grab the state globally now!
+const CinematicAudioEngine = ({ scrollProgress }) => { 
+  const [soundOn, setSoundOn] = useState(false);  const tracks = {
+    // --- PHASE 1 ---
+    ayodhya_majestic: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1a_ayodhya_majestic.mp3') : null),
+    poison_tension: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1b_poison_tension.mp3') : null),
+    exile_sadness: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1c_exile_sadness.mp3') : null),
+    
+    // --- PHASE 2 ---
+    forest: useRef(typeof Audio !== "undefined" ? new Audio('/audio/2_forest_peace.mp3') : null),
+    surpanakha: useRef(typeof Audio !== "undefined" ? new Audio('/audio/3_red_tension.mp3') : null),
+    deer: useRef(typeof Audio !== "undefined" ? new Audio('/audio/4_golden_mesmerizing.mp3') : null),
+    abduction: useRef(typeof Audio !== "undefined" ? new Audio('/audio/5_void_terror.mp3') : null),
+    grief: useRef(typeof Audio !== "undefined" ? new Audio('/audio/6_cold_grief.mp3') : null),
+    kishkindha: useRef(typeof Audio !== "undefined" ? new Audio('/audio/7_mountain_mystery.mp3') : null),
+    hanuman: useRef(typeof Audio !== "undefined" ? new Audio('/audio/8_hanuman_epic.mp3') : null),
+  };
+
+  // 2. SFX References 💥
+  const slashSfx = useRef(typeof Audio !== "undefined" ? new Audio('/audio/sfx_slash.mp3') : null);
+  const boomSfx = useRef(typeof Audio !== "undefined" ? new Audio('/audio/sfx_boom.mp3') : null);
+
+  const hasPlayedSlash = useRef(false);
+  const hasPlayedBoom = useRef(false);
+
+ useEffect(() => {
+    // 1. Tell GlobalAudio to step aside when this page loads!
+    window.dispatchEvent(new CustomEvent('switchTrack', { detail: 'rama_cinematic' }));
+
+    // 2. Loop all BGM tracks
+    Object.values(tracks).forEach(trackRef => {
+      if (trackRef.current) trackRef.current.loop = true;
+    });
+
+    // 3. Listen for the user clicking the global Sound On/Off button
+    const handleSync = (e) => setSoundOn(e.detail);
+    window.addEventListener('syncAudioState', handleSync);
+    
+    return () => window.removeEventListener('syncAudioState', handleSync);
+  }, []);
+  // 3. The Smart DJ Scroll Listener
+  useMotionValueEvent(scrollProgress, "change", (p) => {
+    if (!soundOn) {
+      Object.values(tracks).forEach(t => { if (t.current) { t.current.volume = 0; t.current.pause(); }});
+      return;
+    }
+
+    let activeTrack = 'ayodhya_majestic';
+    
+    // --- PHASE 1 MATH (The Fall of Ayodhya) ---
+    if (p < 0.285) activeTrack = 'ayodhya_majestic';                 // Golden Ayodhya & The Wedding
+    else if (p >= 0.285 && p < 0.49) activeTrack = 'poison_tension'; // Manthara's Poison & The Debt
+    else if (p >= 0.49 && p < 0.58) activeTrack = 'exile_sadness';   // Leaving the city barefoot
+
+    // --- PHASE 2 MATH (The Abyss) ---
+    else if (p >= 0.58 && p < 0.653) activeTrack = 'forest';         // Peaceful Green
+    else if (p >= 0.653 && p < 0.716) activeTrack = 'surpanakha';    // Blood Red Panic
+    else if (p >= 0.716 && p < 0.763) activeTrack = 'deer';          // Sickly Gold
+    else if (p >= 0.763 && p < 0.823) activeTrack = 'abduction';     // Pitch Black Terror
+    else if (p >= 0.823 && p < 0.875) activeTrack = 'grief';         // Cold Weeping Blue
+    else if (p >= 0.875 && p < 0.933) activeTrack = 'kishkindha';    // Earthy Mountain
+    else if (p >= 0.933) activeTrack = 'hanuman';                    // Blazing Saffron
+
+    // Play the active track, mute the rest
+    Object.keys(tracks).forEach(key => {
+      const audio = tracks[key].current;
+      if (!audio) return;
+
+      if (key === activeTrack) {
+        if (audio.paused) audio.play();
+        audio.volume = 0.6; // Target volume
+      } else {
+        audio.volume = 0;
+      }
+    });
+
+    // --- 💥 SFX TRIGGER LOGIC ---
+    if (p > 0.72 && p < 0.75 && !hasPlayedSlash.current) {
+      if (slashSfx.current) { slashSfx.current.currentTime = 0; slashSfx.current.play(); }
+      hasPlayedSlash.current = true;
+    } else if (p < 0.70) hasPlayedSlash.current = false;
+
+    if (p > 0.985 && !hasPlayedBoom.current) {
+      if (boomSfx.current) { boomSfx.current.currentTime = 0; boomSfx.current.play(); }
+      hasPlayedBoom.current = true;
+    } else if (p < 0.95) hasPlayedBoom.current = false;
+  });
+
+  return null; 
+};
+
+// --------------------------------------------------------
 // 👑 MAIN EDITORIAL COMPONENT
 // --------------------------------------------------------
 export default function RamaLore({ onBack }) {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => { window.scrollTo(0, 0); const checkMobile = () => setIsMobile(window.innerWidth < 768); checkMobile(); window.addEventListener('resize', checkMobile); return () => window.removeEventListener('resize', checkMobile); }, []);
-  useEffect(() => { setGlobalMusic('rama'); }, []);
+  useEffect(() => { setGlobalMusic('rama_cinematic'); }, []);
 
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
@@ -658,7 +752,8 @@ export default function RamaLore({ onBack }) {
         </Canvas>
       </div>
    
-
+{/* The Audio Engine! */}
+<CinematicAudioEngine scrollProgress={sp} />
       <motion.div className="sticky top-0 w-full h-screen overflow-hidden z-10 pointer-events-none">
         
         {/* S1: Hook */}
@@ -1161,7 +1256,7 @@ export default function RamaLore({ onBack }) {
         </motion.div>
 
         <motion.div style={{ opacity: s73, x: offsetRight }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-end text-right px-6 md:px-24 z-10">
-          <ImagePlaceholder title=" " color="f97316" width="w-[80vw] md:w-[400px]" height="h-[25vh] md:h-[300px]" className="mb-8 md:mb-0 md:mr-12 rounded-2xl shrink-0 object-cover shadow-[0_0_80px_rgba(249,115,22,0.5)]" />
+          <ImagePlaceholder title="HANUMAN_KNEELING" color="f97316" width="w-[80vw] md:w-[400px]" height="h-[25vh] md:h-[300px]" className="mb-8 md:mb-0 md:mr-12 rounded-2xl shrink-0 object-cover shadow-[0_0_80px_rgba(249,115,22,0.5)]" />
           <div className="z-10 text-center md:text-right w-full md:max-w-xl">
             <h3 className="text-[clamp(2.5rem,6vw,6rem)] font-black uppercase tracking-widest text-white mb-4 leading-none break-words whitespace-normal">THE ULTIMATE DEVOTEE.</h3>
             <p className="text-xl md:text-3xl font-serif italic text-white/80">
