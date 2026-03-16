@@ -488,7 +488,7 @@ export default function ParshuramaLore({ onBack }) {
         <motion.div style={{ opacity: s4, x: offsetLeft }} className="absolute inset-0 flex flex-col md:flex-row items-center justify-start px-6 md:px-24 text-left">
           <div className="max-w-xl z-10 md:mr-12">
             <h1 className="text-5xl md:text-7xl font-serif uppercase text-[#fbbf24] leading-none mb-6">The Theft.</h1>
-            <p className="text-2xl tracking-widest font-light mb-8 md:mb-0">King Kartavirya Arjuna stole from the peaceful hermitage, assuming there would be zero consequences.</p>
+            <p className="text-2xl tracking-widest font-light mb-8 md:mb-0">King Kartavirya Arjuna stole the holy cow "Kamdhenu" from the peaceful hermitage, assuming there would be zero consequences.</p>
           </div>
 <img 
             src="/HERMITAGE_BREACHED.png" 

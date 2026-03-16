@@ -1,4 +1,5 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
+import { PerformanceMonitor } from '@react-three/drei';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { TorusKnot, Sparkles, Stars } from '@react-three/drei';
@@ -87,9 +88,9 @@ const WeddingParticles = ({ scrollProgress }) => {
 // --------------------------------------------------------
 // 🌧️ THE EXILE RAINSTORM 
 // --------------------------------------------------------
-const RainStorm = ({ scrollProgress }) => {
+const RainStorm = ({ scrollProgress, isMobile }) => {
   const rainRef = useRef();
-  const count = 2000;
+  const count = isMobile ? 500 : 2000; // ✂️ 75% less math on mobile!
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
   const particles = useMemo(() => {
@@ -253,9 +254,9 @@ const ThePinaka = ({ scrollProgress, isMobile }) => {
 // --------------------------------------------------------
 // 🌪️ DYNAMIC ATMOSPHERE (Pollen -> Ash -> Fire Embers)
 // --------------------------------------------------------
-const DynamicAtmosphere = ({ scrollProgress }) => {
+const DynamicAtmosphere = ({ scrollProgress, isMobile }) => {
   const particlesRef = useRef();
-  const count = 1500;
+  const count = isMobile ? 400 : 1500; // ✂️ 70% less math on mobile!
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const particles = useMemo(() => new Array(count).fill().map(() => ({
     x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, z: (Math.random() - 0.5) * 20 - 5, 
@@ -373,13 +374,16 @@ const DarkMatter = ({ scrollProgress }) => {
     }
   });
 
+// Change the massive geometry math AND downgrade the material to Lambert!
   return (
     <group ref={groupRef} position={[0, 0, -3]} scale={0}>
-      <TorusKnot args={[3, 0.5, 128, 16]} position={[0,0,0]}>
-        <meshStandardMaterial color="#000000" metalness={0.9} roughness={0.1} wireframe={true} transparent opacity={0.3} />
+      {/* Slashed 128 segments down to 64 */}
+      <TorusKnot args={[3, 0.5, 64, 16]} position={[0,0,0]}>
+        {/* Swapped Standard for basic Lambert lighting */}
+        <meshLambertMaterial color="#000000" emissive="#111111" wireframe={true} transparent opacity={0.3} />
       </TorusKnot>
-      <TorusKnot args={[4, 0.2, 128, 16]} position={[0,0,0]} rotation={[Math.PI/2, 0, 0]}>
-        <meshStandardMaterial color="#ef4444" metalness={0.5} roughness={0.5} wireframe={true} transparent opacity={0.15} emissive="#ef4444" emissiveIntensity={0.5}/>
+      <TorusKnot args={[4, 0.2, 64, 16]} position={[0,0,0]} rotation={[Math.PI/2, 0, 0]}>
+        <meshLambertMaterial color="#ef4444" emissive="#ef4444" wireframe={true} transparent opacity={0.15} />
       </TorusKnot>
     </group>
   );
@@ -480,8 +484,8 @@ const RamaMatrixScene = ({ scrollProgress, isMobile }) => {
 
   return (
     <group position={[0, 0, -5]}>
-      <TorusKnot ref={crownRef} args={[1.5, 0.3, 256, 32]} position={[0, 0, 0]}>
-        <meshStandardMaterial color="#fbbf24" metalness={1} roughness={0.2} />
+<TorusKnot ref={crownRef} args={[1.5, 0.3, 128, 16]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#fbbf24" metalness={1} roughness={0.2} />
       </TorusKnot>
       <group ref={sparkleRef}>
         <Sparkles count={isMobile ? 150 : 300} scale={25} size={isMobile ? 2 : 4} speed={0.4} color="#fef08a" opacity={0.6} />
@@ -548,17 +552,18 @@ const RamaEffects = ({ isMobile }) => {
 };
 
 // --------------------------------------------------------
-// 🎵 CINEMATIC MULTI-TRACK AUDIO ENGINE
+// 🎵 CINEMATIC MULTI-TRACK AUDIO ENGINE (THE MASTER CUT)
 // --------------------------------------------------------
-// Remove the `soundOn` prop, it will grab the state globally now!
 const CinematicAudioEngine = ({ scrollProgress }) => { 
-  const [soundOn, setSoundOn] = useState(false);  const tracks = {
-    // --- PHASE 1 ---
-    ayodhya_majestic: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1a_ayodhya_majestic.mp3') : null),
+  const [soundOn, setSoundOn] = useState(false); 
+  const [currentTheme, setCurrentTheme] = useState('ayodhya_majestic'); 
+  const fadeIntervals = useRef({}); 
+
+  // 1. ALL EMOTIONAL BGM TRACKS! 🎧
+  const tracks = {
+    ayodhya_majestic: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1a_ayodhya_majestic.mp3') : null), 
     poison_tension: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1b_poison_tension.mp3') : null),
     exile_sadness: useRef(typeof Audio !== "undefined" ? new Audio('/audio/1c_exile_sadness.mp3') : null),
-    
-    // --- PHASE 2 ---
     forest: useRef(typeof Audio !== "undefined" ? new Audio('/audio/2_forest_peace.mp3') : null),
     surpanakha: useRef(typeof Audio !== "undefined" ? new Audio('/audio/3_red_tension.mp3') : null),
     deer: useRef(typeof Audio !== "undefined" ? new Audio('/audio/4_golden_mesmerizing.mp3') : null),
@@ -571,68 +576,115 @@ const CinematicAudioEngine = ({ scrollProgress }) => {
   // 2. SFX References 💥
   const slashSfx = useRef(typeof Audio !== "undefined" ? new Audio('/audio/sfx_slash.mp3') : null);
   const boomSfx = useRef(typeof Audio !== "undefined" ? new Audio('/audio/sfx_boom.mp3') : null);
-
   const hasPlayedSlash = useRef(false);
   const hasPlayedBoom = useRef(false);
 
- useEffect(() => {
-    // 1. Tell GlobalAudio to step aside when this page loads!
+ // --- HOOK 1: CLEAN SETUP ---
+  useEffect(() => {
+    // Tell GlobalAudio to step aside
     window.dispatchEvent(new CustomEvent('switchTrack', { detail: 'rama_cinematic' }));
 
-    // 2. Loop all BGM tracks
-    Object.values(tracks).forEach(trackRef => {
-      if (trackRef.current) trackRef.current.loop = true;
+    // Preload only the first track to save bandwidth
+    const trackKeys = Object.keys(tracks);
+    trackKeys.forEach((key, index) => {
+      const audio = tracks[key].current;
+      if (audio) {
+        audio.loop = true;
+        if (index === 0) audio.preload = "auto"; 
+        else audio.preload = "metadata"; 
+      }
     });
 
-    // 3. Listen for the user clicking the global Sound On/Off button
+    // Listen to your existing Global Button!
     const handleSync = (e) => setSoundOn(e.detail);
     window.addEventListener('syncAudioState', handleSync);
     
-    return () => window.removeEventListener('syncAudioState', handleSync);
+    return () => {
+      window.removeEventListener('syncAudioState', handleSync);
+      // Clean up perfectly on exit
+      Object.values(tracks).forEach(trackRef => {
+        if (trackRef.current) {
+          trackRef.current.volume = 0;
+          trackRef.current.pause();
+          trackRef.current.currentTime = 0; 
+        }
+      });
+      if (slashSfx.current) { slashSfx.current.pause(); slashSfx.current.currentTime = 0; }
+      if (boomSfx.current) { boomSfx.current.pause(); boomSfx.current.currentTime = 0; }
+      window.dispatchEvent(new CustomEvent('switchTrack', { detail: 'kshirsagar' })); 
+    };
   }, []);
-  // 3. The Smart DJ Scroll Listener
-  useMotionValueEvent(scrollProgress, "change", (p) => {
+
+  // --- HOOK 2: THE CROSSFADE ENGINE ---
+  useEffect(() => {
     if (!soundOn) {
       Object.values(tracks).forEach(t => { if (t.current) { t.current.volume = 0; t.current.pause(); }});
       return;
     }
 
-    let activeTrack = 'ayodhya_majestic';
-    
-    // --- PHASE 1 MATH (The Fall of Ayodhya) ---
-    if (p < 0.285) activeTrack = 'ayodhya_majestic';                 // Golden Ayodhya & The Wedding
-    else if (p >= 0.285 && p < 0.49) activeTrack = 'poison_tension'; // Manthara's Poison & The Debt
-    else if (p >= 0.49 && p < 0.58) activeTrack = 'exile_sadness';   // Leaving the city barefoot
-
-    // --- PHASE 2 MATH (The Abyss) ---
-    else if (p >= 0.58 && p < 0.653) activeTrack = 'forest';         // Peaceful Green
-    else if (p >= 0.653 && p < 0.716) activeTrack = 'surpanakha';    // Blood Red Panic
-    else if (p >= 0.716 && p < 0.763) activeTrack = 'deer';          // Sickly Gold
-    else if (p >= 0.763 && p < 0.823) activeTrack = 'abduction';     // Pitch Black Terror
-    else if (p >= 0.823 && p < 0.875) activeTrack = 'grief';         // Cold Weeping Blue
-    else if (p >= 0.875 && p < 0.933) activeTrack = 'kishkindha';    // Earthy Mountain
-    else if (p >= 0.933) activeTrack = 'hanuman';                    // Blazing Saffron
-
-    // Play the active track, mute the rest
     Object.keys(tracks).forEach(key => {
       const audio = tracks[key].current;
       if (!audio) return;
 
-      if (key === activeTrack) {
-        if (audio.paused) audio.play();
-        audio.volume = 0.6; // Target volume
+      if (fadeIntervals.current[key]) clearInterval(fadeIntervals.current[key]);
+
+      if (key === currentTheme) {
+        if (audio.paused) {
+          audio.volume = 0; // Start at absolute zero to prevent popping!
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => console.log("Audio waiting for global button..."));
+          }
+        }
+        fadeIntervals.current[key] = setInterval(() => {
+          if (audio.volume < 0.55) {
+            audio.volume = Math.min(0.6, audio.volume + 0.05);
+          } else {
+            audio.volume = 0.6; 
+            clearInterval(fadeIntervals.current[key]);
+          }
+        }, 100);
       } else {
-        audio.volume = 0;
+        fadeIntervals.current[key] = setInterval(() => {
+          if (audio.volume > 0.05) {
+            audio.volume = Math.max(0, audio.volume - 0.05);
+          } else {
+            audio.volume = 0;
+            audio.pause(); // Sleep to save memory
+            clearInterval(fadeIntervals.current[key]);
+          }
+        }, 100);
       }
     });
+  }, [currentTheme, soundOn]);
 
-    // --- 💥 SFX TRIGGER LOGIC ---
-    if (p > 0.72 && p < 0.75 && !hasPlayedSlash.current) {
+  // --- HOOK 3: THE SMART DJ SCROLL LISTENER ---
+  useMotionValueEvent(scrollProgress, "change", (p) => {
+    if (!soundOn) return;
+
+    let activeTrack = 'ayodhya_majestic';
+    
+    if (p < 0.278) activeTrack = 'ayodhya_majestic';                 
+    else if (p >= 0.278 && p < 0.49) activeTrack = 'poison_tension'; 
+    else if (p >= 0.49 && p < 0.58) activeTrack = 'exile_sadness';   
+    else if (p >= 0.58 && p < 0.653) activeTrack = 'forest';         
+    else if (p >= 0.653 && p < 0.716) activeTrack = 'surpanakha';    
+    else if (p >= 0.716 && p < 0.763) activeTrack = 'deer';          
+    else if (p >= 0.763 && p < 0.828) activeTrack = 'abduction';     
+    else if (p >= 0.828 && p < 0.875) activeTrack = 'grief';         
+    else if (p >= 0.875 && p < 0.930) activeTrack = 'kishkindha';    
+    else if (p >= 0.930) activeTrack = 'hanuman';                    
+
+    if (activeTrack !== currentTheme) {
+      setCurrentTheme(activeTrack);
+    }
+
+    if (p > 0.680 && p < 0.72 && !hasPlayedSlash.current) {
       if (slashSfx.current) { slashSfx.current.currentTime = 0; slashSfx.current.play(); }
       hasPlayedSlash.current = true;
     } else if (p < 0.70) hasPlayedSlash.current = false;
 
-    if (p > 0.985 && !hasPlayedBoom.current) {
+    if (p > 0.975 && !hasPlayedBoom.current) {
       if (boomSfx.current) { boomSfx.current.currentTime = 0; boomSfx.current.play(); }
       hasPlayedBoom.current = true;
     } else if (p < 0.95) hasPlayedBoom.current = false;
@@ -646,6 +698,7 @@ const CinematicAudioEngine = ({ scrollProgress }) => {
 // --------------------------------------------------------
 export default function RamaLore({ onBack }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [dpr, setDpr] = useState(1); // ✨ NEW: Starts at 1 for absolute safety!
   useEffect(() => { window.scrollTo(0, 0); const checkMobile = () => setIsMobile(window.innerWidth < 768); checkMobile(); window.addEventListener('resize', checkMobile); return () => window.removeEventListener('resize', checkMobile); }, []);
   useEffect(() => { setGlobalMusic('rama_cinematic'); }, []);
 
@@ -736,7 +789,11 @@ export default function RamaLore({ onBack }) {
       </button>
 
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, isMobile ? 12 : 8], fov: 60 }}>
+        {/* ✨ THE FIX: Feed it our dynamic DPR state! */}
+        <Canvas dpr={dpr} camera={{ position: [0, 0, isMobile ? 12 : 8], fov: 60 }}>
+          {/* ✨ THE FIX: If the phone drops below 30fps, it downgrades graphics. If it runs smooth, it upgrades! */}
+          <PerformanceMonitor onIncline={() => setDpr(1.5)} onDecline={() => setDpr(1)} />
+          
           <SceneLights scrollProgress={sp} />
           <RamaMatrixScene scrollProgress={sp} isMobile={isMobile} />
           <RainStorm scrollProgress={sp} />

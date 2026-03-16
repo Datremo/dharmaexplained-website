@@ -42,27 +42,29 @@ export default function GlobalAudio() {
       if (TRACKS[newTheme] === "DELEGATE") {
         isDelegatedRef.current = true;
         audioRef.current.pause(); // Shut up the global track
-        // Immediately tell the new page what the button status is
         window.dispatchEvent(new CustomEvent('syncAudioState', { detail: isPlayingRef.current }));
         return;
       }
       
-      // If it's a normal lore page, take control back!
+      // If it's a normal lore page or the hub, take control back!
       isDelegatedRef.current = false;
       const newSrc = TRACKS[newTheme] || TRACKS.kshirsagar; 
 
-      if (newSrc && audioRef.current.src !== window.location.origin + newSrc) {
+      if (newSrc) {
         const wasPlaying = isPlayingRef.current;
         
-        if (playPromiseRef.current) {
-          try { await playPromiseRef.current; } catch (err) {} 
+        // Only load a new track if the URL actually changed
+        if (!audioRef.current.src.includes(newSrc)) {
+          if (playPromiseRef.current) {
+            try { await playPromiseRef.current; } catch (err) {} 
+          }
+          audioRef.current.pause();
+          audioRef.current.src = newSrc;
+          audioRef.current.load();
         }
-
-        audioRef.current.pause();
-        audioRef.current.src = newSrc;
-        audioRef.current.load();
         
-        if (wasPlaying && !isDelegatedRef.current) {
+        // 🔴 THE FIX: Always force it to resume playing if the global sound button is ON!
+        if (wasPlaying) {
           playPromiseRef.current = audioRef.current.play();
           playPromiseRef.current.catch(err => console.log("Audio transition smoothed."));
         }
