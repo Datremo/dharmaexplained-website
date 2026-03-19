@@ -252,6 +252,26 @@ export default function WeaponShowcase({ guide, onBack, onEnterHub }) {
     setTimeout(() => { window.scrollTo(0, 0); }, 50); 
   }, [guide]);
 
+// 👇 ADD THIS BULLETPROOF HISTORY BLOCK 👇
+  const onBackRef = useRef(onBack);
+  useEffect(() => { onBackRef.current = onBack; }, [onBack]);
+
+  useEffect(() => {
+    // Inject the Weapons Screen into the phone's history
+    if (!window.history.state || window.history.state.page !== 'weapon-showcase') {
+      window.history.pushState({ page: 'weapon-showcase', guide }, '', '');
+    }
+
+    const handlePopState = () => {
+      // If they swipe back on the phone, gracefully return to Deity Selection!
+      onBackRef.current(); 
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [guide]); // Re-run if the guide changes
+  // 👆 END HISTORY BLOCK 👆
+
   const [isWarping, setIsWarping] = useState(false);
   const { scrollYProgress } = useScroll();
   const smoothScroll = useSpring(scrollYProgress, { stiffness: 80, damping: 20, restDelta: 0.001 });

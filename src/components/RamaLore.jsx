@@ -705,7 +705,7 @@ export default function RamaLore({ onBack }) {
 
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
+  const sp = useSpring(scrollYProgress, { damping: 25, stiffness: 90, mass: 0.5 });
 
  // 🩸 STRICT CONTINUOUS BACKGROUND CONTROL (Mapped to exact Phase 2 emotional beats!)
   const bgColor = useTransform(sp, 
@@ -781,10 +781,10 @@ export default function RamaLore({ onBack }) {
   const s69 = getP2(40); const s70 = getP2(41); const s71 = getP2(42); const s72 = getP2(43);
   const s73 = getP2(44); const s74 = getP2(45); const s75 = getP2(46);
 
-  // ⚠️ CHANGE THIS DIV HEIGHT FROM 25000vh TO 35000vh!
+  // 🎬 THE FIX: Slashed to 4000vh so Desktop Mouse Wheels can actually scrub the timeline!
   return (
-    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[50000vh] font-sans text-white selection:bg-[#fbbf24]/30">
-      <div className="hidden md:block"><CinematicCursor /></div>
+    <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[4000vh] font-sans text-white selection:bg-[#fbbf24]/30">
+      <div className="hidden md:block pointer-events-none z-[999]"><CinematicCursor /></div>
       <button onClick={onBack} className="fixed top-4 left-4 md:top-6 md:left-6 z-[100] px-4 md:px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all text-[#fbbf24] shadow-[0_0_20px_rgba(251,191,36,0.2)] backdrop-blur-md">
         &larr; Return to Astrolabe
       </button>

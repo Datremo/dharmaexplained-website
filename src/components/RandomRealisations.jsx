@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { Stars, Sparkles, Environment } from '@react-three/drei';
@@ -13,6 +13,34 @@ import { setGlobalMusic } from './GlobalAudio'; // 👈 ADD THIS IMPORT
 export default function RandomRealisations({ onBackToHub }) {
   const [activeTab, setActiveTab] = useState(null);
 
+  // 1. Ref to track active tab inside the event listener
+  const activeTabRef = useRef(activeTab);
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
+  // 2. The Hub-Level History Controller
+  useEffect(() => {
+    // Inject the Vault Hub into the phone's history so it doesn't close the app!
+    window.history.pushState({ page: 'realisations-hub' }, '', '');
+
+    const handlePopState = () => {
+      if (activeTabRef.current) {
+        setActiveTab(null); // Close the specific Construct, stay in the Grid
+      } else {
+        onBackToHub(); // You are in the Grid: Exit Vault safely!
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [onBackToHub]);
+
+  // 3. Safe Construct Opener
+  const openConstruct = (id) => {
+    window.history.pushState({ view: id }, '', '');
+    setActiveTab(id);
+  };
 // 👈 ADD THIS EFFECT
   useEffect(() => {
     if (activeTab === null) {
@@ -40,10 +68,10 @@ export default function RandomRealisations({ onBackToHub }) {
     { id: 'pulse', title: 'Neon Pulse', subtitle: 'City Core', color: '#14b8a6', code: '7788 9900 1122 3344' },
   ], []);
 
-  // 👇 ROUTING ENGINE UPDATED
-  if (activeTab === 'formula') return <TheTrueFormula onBack={() => setActiveTab(null)} />;
-  if (activeTab === 'antidote') return <TheSlowAntidote onBack={() => setActiveTab(null)} />;
-  if (activeTab === 'domination') return <TheDominationProtocol onBack={() => setActiveTab(null)} />;
+ // 👇 CHANGED: onBack now tells the history stack to pop, which triggers the catcher above!
+  if (activeTab === 'formula') return <TheTrueFormula onBack={() => window.history.back()} />;
+  if (activeTab === 'antidote') return <TheSlowAntidote onBack={() => window.history.back()} />;
+  if (activeTab === 'domination') return <TheDominationProtocol onBack={() => window.history.back()} />;
 
   return (
     <div className="relative w-full h-screen bg-[#030303] text-white font-sans overflow-hidden">
@@ -63,7 +91,7 @@ export default function RandomRealisations({ onBackToHub }) {
         {/* HEADER */}
         <div className="sticky top-0 z-20 flex justify-between items-start p-8 md:p-12 bg-gradient-to-b from-[#030303] to-transparent pointer-events-none">
           <button 
-            onClick={onBackToHub} 
+            onClick={() => window.history.back()} // 👈 CHANGED
             className="pointer-events-auto group flex items-center gap-3 text-[10px] md:text-xs tracking-[0.4em] text-white/40 hover:text-white transition-all uppercase"
           >
             <span className="w-8 h-[1px] bg-white/40 group-hover:bg-white" />
@@ -82,8 +110,7 @@ export default function RandomRealisations({ onBackToHub }) {
             {realisations.map((item, index) => (
               <motion.button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                whileHover={{ scale: 1.02, y: -5 }}
+                onClick={() => openConstruct(item.id)}                whileHover={{ scale: 1.02, y: -5 }}
                 whileTap={{ scale: 0.98 }}
                 className="relative flex flex-col justify-between w-full aspect-[1.6/1] p-6 rounded-2xl text-left overflow-hidden group transition-shadow hover:shadow-2xl"
                 style={{

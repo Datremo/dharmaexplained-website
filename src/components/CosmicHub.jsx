@@ -387,6 +387,38 @@ export default function CosmicHub({ onBack }) {
   const [isHolding, setIsHolding] = useState(false);
 
   const { scrollYProgress } = useScroll(); 
+
+ // 1. Store refs so they don't trigger re-renders and mess up the history stack
+  const activeLoreRef = useRef(activeLore);
+  const onBackRef = useRef(onBack);
+
+  useEffect(() => { activeLoreRef.current = activeLore; }, [activeLore]);
+  useEffect(() => { onBackRef.current = onBack; }, [onBack]);
+
+  // 2. The Bulletproof Hub-Level History Controller
+  useEffect(() => {
+    // Only inject if it's a fresh load (prevents React Strict Mode from double-pushing)
+    if (!window.history.state || window.history.state.page !== 'cosmic-hub') {
+      window.history.pushState({ page: 'cosmic-hub' }, '', '');
+    }
+
+    const handlePopState = () => {
+      if (activeLoreRef.current) {
+        setActiveLore(null); // Close the Lore page, stay in the Hub
+      } else {
+        onBackRef.current(); // You are in Kshirsagar/Astrolabe: Exit Hub safely!
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []); // <--- EMPTY ARRAY IS CRITICAL
+
+  // 3. Safe Lore Opener
+  const openLore = (id) => {
+    window.history.pushState({ page: 'lore', id }, '', '');
+    setActiveLore(id);
+  };
   
   // 🔥 THE FIX: Zero-bounce math applied to the main scroll!
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
@@ -457,43 +489,37 @@ export default function CosmicHub({ onBack }) {
     setIsHolding(false);
   };
 
- // 🔥 THE MASTER ROUTER
-  if (activeLore) {
-    // 1. The Interventions Chain
+ if (activeLore) {
     if (activeLore === 'lustbreaker') {
-      return <LustBreaker onBack={() => setActiveLore(null)} onAscend={() => setActiveLore('mayaprotocol')} />;
+      return <LustBreaker onBack={() => window.history.back()} onAscend={() => setActiveLore('mayaprotocol')} />;
     }
     if (activeLore === 'mayaprotocol') {
-      // ✨ MAKE SURE onAwaken IS RIGHT HERE!
-      return <MayaProtocol onBack={() => setActiveLore(null)} onAwaken={() => setActiveLore('karmaprotocol')} />;
+      return <MayaProtocol onBack={() => window.history.back()} onAwaken={() => setActiveLore('karmaprotocol')} />;
     }
     if (activeLore === 'karmaprotocol') {
       return <KarmaProtocol onEnterHub={() => setActiveLore(null)} />;
     }
     
-    // 2. The Avatarsx
-    if (activeLore === 'V') return <VamanaLore onBack={() => setActiveLore(null)} />;
-    if (activeLore === 'I') return <MatsyaLore onBack={() => setActiveLore(null)} />;
-    if (activeLore === 'II') return <KurmaLore onBack={() => setActiveLore(null)} />;
-    if (activeLore === 'III') return <VarahaLore onBack={() => setActiveLore(null)} />;
-    if (activeLore === 'IV') return <NarasimhaLore onBack={() => setActiveLore(null)} />;
-    if (activeLore === 'VI') return <ParshuramaLore onBack={() => setActiveLore(null)} />;
-     if (activeLore === 'VII') return <RamaLore onBack={() => setActiveLore(null)} />;
-    // 3. The Default Fallback
-    const activeAvatarData = DASHAVATARA.find(av => av.id === activeLore);
+    if (activeLore === 'V') return <VamanaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'I') return <MatsyaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'II') return <KurmaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'III') return <VarahaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'IV') return <NarasimhaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'VI') return <ParshuramaLore onBack={() => window.history.back()} />;
+    if (activeLore === 'VII') return <RamaLore onBack={() => window.history.back()} />;
     
+    const activeAvatarData = DASHAVATARA.find(av => av.id === activeLore);
     if (!activeAvatarData) {
       setActiveLore(null);
       return null;
     }
-    
-    return <DefaultLore avatar={activeAvatarData} onBack={() => setActiveLore(null)} />;
+    return <DefaultLore avatar={activeAvatarData} onBack={() => window.history.back()} />;
   }
 
   return (
     <div className={`relative w-full bg-[#0a0514] font-sans text-white selection:bg-[#00ccff]/30 ${journeyPhase === 'akashic' ? 'h-screen overflow-hidden' : ''}`}>
       
-      <button onClick={onBack} className="fixed top-6 left-6 z-[90] px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[#fbbf24] text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all backdrop-blur-md cursor-pointer shadow-lg">← Exit Hub</button>
+      <button onClick={() => window.history.back()} className="fixed top-6 left-6 z-[90] px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[#fbbf24] text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all backdrop-blur-md cursor-pointer shadow-lg">← Exit Hub</button>
 
       {journeyPhase === 'descent' && (
         <button 
@@ -505,7 +531,7 @@ export default function CosmicHub({ onBack }) {
       )}
 {/* 🔥 TEMPORARY LUST BREAKER VIP BUTTON */}
       <button 
-        onClick={() => setActiveLore('lustbreaker')}
+      onClick={() => openLore('lustbreaker')} // 👈 CHANGED
         className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] px-4 md:px-6 py-2 md:py-3 bg-[#dc2626]/10 border border-[#dc2626] rounded-full text-[#dc2626] font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase hover:bg-[#dc2626] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_30px_rgba(220,38,38,0.4)] flex items-center gap-3 group"
       >
         <span className="relative flex h-2 w-2 md:h-3 md:w-3">
@@ -552,7 +578,10 @@ export default function CosmicHub({ onBack }) {
           <CosmicArtifacts activePhase={activePhase} journeyPhase={journeyPhase} />
           <AkashicGalaxy journeyPhase={journeyPhase} />
           <MokshaCore isHolding={isHolding} onAwaken={handleAwaken} journeyPhase={journeyPhase} />
-          <DashavataraAstrolabe journeyPhase={journeyPhase} activeAvatar={activeAvatar} setActiveLore={setActiveLore} />        </Canvas>
+          <DashavataraAstrolabe journeyPhase={journeyPhase} 
+          activeAvatar={activeAvatar} 
+          setActiveLore={openLore}/>        
+          </Canvas>
       </div>
 
       {journeyPhase === 'descent' && (

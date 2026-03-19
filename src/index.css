@@ -1,6 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+ 
+html, body, #root {
+  width: 100vw;
+  /* Use dvh (dynamic viewport height) so it fills the screen perfectly even if mobile toolbars appear */
+  height: 100dvh; 
+  margin: 0;
+  padding: 0;
+}
 
 body {
   margin: 0;
