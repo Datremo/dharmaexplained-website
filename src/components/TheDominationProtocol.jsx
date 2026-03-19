@@ -4,32 +4,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { MeshDistortMaterial, Stars, Sparkles, Float, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
-
-// ============================================================================
-// 🎵 AUDIO HUD: SYSTEM OVERRIDE
-// ============================================================================
-const AudioHUD = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  return (
-    <div className="fixed bottom-10 right-10 z-[100] flex items-center gap-5 bg-[#0a0a0a]/80 backdrop-blur-xl border border-red-500/20 px-5 py-3 rounded-none shadow-[0_0_30px_rgba(220,38,38,0.2)] transition-all hover:bg-black hover:border-red-500/50">
-      <div className="flex flex-col text-right border-r border-red-500/20 pr-4">
-        <p className="text-[9px] font-mono tracking-[0.4em] text-red-500 uppercase mb-1 animate-pulse">Resistance Frequency</p>
-        <p className="text-xs font-mono font-bold tracking-widest text-white uppercase">Neural_Unlock.wav</p>
-      </div>
-      <button 
-        onClick={() => setIsPlaying(!isPlaying)}
-        className="w-10 h-10 bg-red-600 text-white flex items-center justify-center hover:bg-white hover:text-red-600 transition-colors shadow-[0_0_15px_rgba(220,38,38,0.4)]"
-      >
-        {isPlaying ? (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-        ) : (
-          <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        )}
-      </button>
-    </div>
-  );
-};
-
+import { setGlobalMusic } from './GlobalAudio'; // 👈 ADD THIS
+const isMobile = window.innerWidth < 768;
 // ============================================================================
 // 🎬 POST-PROCESSING: THE RESISTANCE LENS
 // ============================================================================
@@ -131,11 +107,12 @@ const TheAlgorithmCore = ({ scrollProgress }) => {
 
   return (
     <group>
+        <Stars count={isMobile ? 1000 : 3000} />
       <Stars radius={100} depth={50} count={3000} factor={3} saturation={0} fade speed={0.5} />
       
       <Float speed={1} rotationIntensity={0.2} floatIntensity={0.5}>
         <mesh ref={brainRef}>
-          <torusKnotGeometry args={[1, 0.3, 256, 32]} />
+        <torusKnotGeometry args={[1, 0.3, isMobile ? 128 : 256, isMobile ? 16 : 32]} />
           <MeshDistortMaterial color="#064e3b" emissive="#10b981" emissiveIntensity={3} envMapIntensity={1} clearcoat={1} metalness={0.8} roughness={0.2} distort={0.2} speed={0.5} />
         </mesh>
         
@@ -174,10 +151,15 @@ const CinematicText = ({ progress, start, end, children }) => {
 // ============================================================================
 export default function TheDominationProtocol({ onBack }) {
   const containerRef = useRef(null);
+
+  // 👈 ADD THIS EFFECT
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setGlobalMusic('domination');
+  }, []);
   
-  // ✅ Extended to 2000vh (NEW PAGE READY)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const p = useSpring(scrollYProgress, { damping: 40, stiffness: 60, mass: 1 });
+    const p = useSpring(scrollYProgress, { damping: 40, stiffness: 60, mass: 1 });
 
   // (0.0 - 0.86) UNTOUCHED LOGIC
   const oldOp = useTransform(p, [0.55, 0.57, 0.65, 0.68], [0, 1, 1, 0]);
@@ -201,7 +183,7 @@ export default function TheDominationProtocol({ onBack }) {
         [ X ] Disconnect
       </button>
 
-      <AudioHUD />
+    
 
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>

@@ -13,6 +13,13 @@ const TRACKS = {
   narasimha: "/narasimha.mp3",
   vamana: "/vamana.mp3",
   parshurama: "/parshurama.mp3",
+  
+  // ✨ RANDOM REALISATION TRACKS
+  vault_lobby: "/vault_lobby.mp3",
+  true_formula: "/true_formula.mp3",
+  slow_antidote: "/slow_antidote.mp3",
+  domination: "/domination.mp3",
+
   // ✨ ADD THIS: A special flag that tells the global audio to step aside!
   rama_cinematic: "DELEGATE", 
 };

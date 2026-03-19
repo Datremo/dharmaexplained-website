@@ -4,32 +4,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { MeshDistortMaterial, Stars, Sparkles, Float, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
+import { setGlobalMusic } from './GlobalAudio'; // 👈 ADD THIS
+import { useEffect } from 'react'; // 👈 ADD THIS (if not already imported)
 
-// ============================================================================
-// 🎵 AUDIO HUD 
-// ============================================================================
-const AudioHUD = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  return (
-    <div className="fixed bottom-10 right-10 z-[100] flex items-center gap-5 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all hover:bg-black/60 hover:border-white/30">
-      <div className="flex flex-col text-right border-r border-white/10 pr-4">
-        <p className="text-[9px] font-mono tracking-[0.4em] text-[#f59e0b] uppercase mb-1">Volumetric Audio</p>
-        <p className="text-xs font-bold tracking-widest text-white uppercase">The_Equation.wav</p>
-      </div>
-      <button 
-        onClick={() => setIsPlaying(!isPlaying)}
-        className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-      >
-        {isPlaying ? (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-        ) : (
-          <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        )}
-      </button>
-    </div>
-  );
-};
-
+const isMobile = window.innerWidth < 768;
 // ============================================================================
 // 🎬 CINEMATIC LENS
 // ============================================================================
@@ -125,6 +103,7 @@ const ThermodynamicCore = ({ scrollProgress }) => {
 
   return (
     <group>
+      <Stars count={isMobile ? 1000 : 3000} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={1} fade speed={1} />
       <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
         <mesh ref={innerCore}>
@@ -149,6 +128,12 @@ const ThermodynamicCore = ({ scrollProgress }) => {
 export default function TheTrueFormula({ onBack }) {
   const containerRef = useRef(null);
   
+  // 👈 ADD THIS EFFECT TO TRIGGER MUSIC ON LOAD
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setGlobalMusic('true_formula');
+  }, []);
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const p = useSpring(scrollYProgress, { damping: 40, stiffness: 60, mass: 1 });
 
@@ -179,7 +164,7 @@ export default function TheTrueFormula({ onBack }) {
   const b7_opacity = useTransform(p, [0.92, 0.96, 1], [0, 1, 1]);
   const b7_y = useTransform(p, [0.92, 1], ["10vh", "0vh"]);
 
-  return (
+ return (
     <div ref={containerRef} className="relative w-full h-[1200vh] bg-[#010101] text-white overflow-clip font-sans selection:bg-[#f59e0b]/40">
       
       <button 
@@ -189,11 +174,9 @@ export default function TheTrueFormula({ onBack }) {
         ← Return
       </button>
 
-      <AudioHUD />
-
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-          <Suspense fallback={null}>
+            <Canvas dpr={[1, isMobile ? 1 : 1.5]} camera={{ position: [0, 0, 8], fov: 45 }}>
+            <Suspense fallback={null}>
             <ThermodynamicCore scrollProgress={p} />
             <CinematicLens scrollProgress={p} />
             <Environment preset="night" />
@@ -270,7 +253,7 @@ export default function TheTrueFormula({ onBack }) {
         {/* BEAT 7: THE RISE (Center - Ascension) */}
         <motion.div style={{ opacity: b7_opacity, y: b7_y }} className="absolute inset-0 flex flex-col items-center justify-center">
           <div className="max-w-5xl text-center mt-[-10vh]">
-            <p className="text-xl md:text-3xl font-light text-slate-300 mb-6 tracking-widest uppercase drop-shadow-xl">
+            <p className="text-[clamp(3rem,vw,10rem)] font-light text-slate-300 mb-6 tracking-widest uppercase drop-shadow-xl">
               The greater and larger success
             </p>
             <h1 className="text-6xl md:text-[9rem] leading-[0.85] font-black uppercase tracking-tighter text-white drop-shadow-[0_0_80px_rgba(255,255,255,1)]">

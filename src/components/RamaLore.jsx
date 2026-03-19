@@ -490,6 +490,7 @@ const RamaMatrixScene = ({ scrollProgress, isMobile }) => {
       <group ref={sparkleRef}>
         <Sparkles count={isMobile ? 150 : 300} scale={25} size={isMobile ? 2 : 4} speed={0.4} color="#fef08a" opacity={0.6} />
       </group>
+      <Stars count={isMobile ? 1000 : 3000} />
       <Stars radius={50} depth={50} count={1000} factor={2} saturation={1} fade speed={1} />
       <ThePinaka scrollProgress={scrollProgress} isMobile={isMobile} />
       <WeddingParticles scrollProgress={scrollProgress} />

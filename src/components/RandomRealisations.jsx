@@ -1,16 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { Stars, Sparkles, Environment } from '@react-three/drei';
 import TheTrueFormula from './TheTrueFormula';
 import TheSlowAntidote from './TheSlowAntidote';
 import TheDominationProtocol from './TheDominationProtocol'; // 👈 IMPORTED CONSTRUCT 03
+import { setGlobalMusic } from './GlobalAudio'; // 👈 ADD THIS IMPORT
 
 // --------------------------------------------------------
 // 🧠 MAIN VAULT (DOM + 3D Hybrid)
 // --------------------------------------------------------
 export default function RandomRealisations({ onBackToHub }) {
   const [activeTab, setActiveTab] = useState(null);
+
+// 👈 ADD THIS EFFECT
+  useEffect(() => {
+    if (activeTab === null) {
+      setGlobalMusic('vault_lobby');
+    }
+  }, [activeTab]);
 
   // 📦 THE 15 CARDS DATA
   const realisations = useMemo(() => [

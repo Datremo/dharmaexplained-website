@@ -8,4 +8,5 @@ body {
   color: white;
   overflow-x: hidden;
   overscroll-behavior-y: none; /* Stops the bouncy scroll on Macs/Phones */
+  background-color: #000000;
 }

@@ -8,43 +8,8 @@ import {
 import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
-
-// ============================================================================
-// 🎵 COMPONENT 1: THE AUDIO HUD (Prepped for your music)
-// ============================================================================
-const AudioHUD = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  return (
-    <div className="fixed bottom-8 right-8 z-[100] flex items-center gap-4 bg-black/40 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] pointer-events-auto transition-all hover:bg-black/60 hover:border-white/30">
-      <button 
-        onClick={() => setIsPlaying(!isPlaying)}
-        className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform"
-      >
-        {isPlaying ? (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-        ) : (
-          <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        )}
-      </button>
-      <div className="flex flex-col">
-        <p className="text-[9px] font-mono tracking-[0.3em] text-[#8b5cf6] uppercase">Now Playing</p>
-        <p className="text-xs font-bold tracking-widest text-white uppercase">The_Slow_Antidote.wav</p>
-      </div>
-      {/* Visualizer Bars */}
-      <div className="flex gap-1 ml-4 h-6 items-end">
-        {[...Array(4)].map((_, i) => (
-          <motion.div 
-            key={i}
-            animate={{ height: isPlaying ? ["20%", "100%", "40%", "80%", "20%"] : "20%" }}
-            transition={{ repeat: Infinity, duration: 0.8 + (i * 0.2), ease: "easeInOut" }}
-            className="w-1 bg-[#8b5cf6] rounded-t-sm"
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
+import { setGlobalMusic } from './GlobalAudio'; // 👈 ADD THIS
+const isMobile = window.innerWidth < 768;
 
 // ============================================================================
 // 🌌 COMPONENT 2: THE 3D PHYSICS ENGINE (Corruption to Purification)
@@ -109,6 +74,7 @@ const MythologicalCore = ({ scrollProgress }) => {
 
   return (
     <group>
+        <Stars count={isMobile ? 1000 : 3000} />
       <Stars radius={100} depth={50} count={4000} factor={3} saturation={0} fade speed={0.5} />
       
       <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
@@ -200,7 +166,12 @@ const CinematicText = ({ progress, start, end, children, align = "center" }) => 
 // ============================================================================
 export default function TheSlowAntidote({ onBack }) {
   const containerRef = useRef(null);
-  
+
+  // 👈 ADD THIS EFFECT
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setGlobalMusic('slow_antidote');
+  }, []);
   // Massive 1000vh scroll container for buttery smooth pacing
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -221,8 +192,6 @@ export default function TheSlowAntidote({ onBack }) {
         ← Esc. Construct
       </button>
 
-      {/* 🎵 UI LAYER (Bottom) */}
-      <AudioHUD />
 
       {/* 🌌 LAYER 1: THE FIXED 3D ENGINE */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -268,21 +237,20 @@ export default function TheSlowAntidote({ onBack }) {
               He sends fragments of himself into humanity. Manipulating them into abandoning the light.
             </p>
             <p className="mt-6 text-sm font-mono tracking-[0.4em] text-[#8b5cf6] uppercase">
-              // WARNING: The Illusion of Free Will
+              [Lust] [Envy] [Laziness] [Greed] [GLuttony]
             </p>
           </div>
         </CinematicText>
 
         {/* BEAT 4: God's Countermeasure */}
-        <CinematicText progress={smoothProgress} start={0.33} end={0.48} align="right">
+        <CinematicText progress={smoothProgress} start={0.33} end={0.48} align="left">
           <div className="max-w-4xl pr-4 md:pr-20">
-            <p className="text-3xl md:text-5xl font-light text-white/90 leading-tight">
-              That is why the Divine does not manifest entirely.
-            </p>
-            <h2 className="mt-6 text-6xl md:text-8xl font-black uppercase tracking-widest text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.3)]">
-              He sends fragments.
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[#EDB50C] drop-shadow-[0_0_40px_rgba(134, 30, 238, 0.4)]">
+              That is why <br/>the Divine <br/> does not manifest <br/>entirely.
             </h2>
-            <p className="mt-6 text-xl md:text-2xl font-serif italic text-white/50 border-r-2 border-white/50 pr-6">
+
+            <p className="mt-8 text-xl md:text-4xl font-serif text-white/80 leading-relaxed max-w-2xl border-l-2 border-[#64FD4C] pl-6">
+              He sends fragments.
               Anchored in the minds of those who refuse to be manipulated.
             </p>
           </div>
@@ -300,7 +268,7 @@ export default function TheSlowAntidote({ onBack }) {
             to fully emerge.
           </h1>
           <p className="mt-12 text-2xl font-light text-white uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
-            So Lord Kalki can erase it.
+            So Lord Kalki can erase it entirely.
           </p>
         </CinematicText>
 
@@ -319,7 +287,7 @@ export default function TheSlowAntidote({ onBack }) {
             <p className="text-2xl md:text-3xl font-light text-white/80 uppercase tracking-[0.5em] mb-8">
               And a slow poison demands...
             </p>
-            <h1 className="text-7xl md:text-9xl lg:text-[11rem] font-black uppercase tracking-tighter text-white drop-shadow-[0_0_100px_rgba(255,255,255,1)] leading-[0.85]">
+            <h1 className="text-[clamp(3.5rem,8vw,10rem)] leading-[0.8] font-black uppercase tracking-tighter text-white drop-shadow-[0_0_100px_rgba(255,255,255,1)] leading-[0.85]">
               A SLOW<br/>ANTIDOTE.
             </h1>
           </div>
@@ -335,7 +303,6 @@ export default function TheSlowAntidote({ onBack }) {
             <div className="w-px h-24 bg-gradient-to-t from-transparent to-white mt-8"></div>
           </div>
         </CinematicText>
-
       </div>
     </div>
   );
