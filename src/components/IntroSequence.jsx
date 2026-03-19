@@ -37,7 +37,7 @@ const FlyingStars = ({ smoothProgress }) => {
   );
 };
 
-export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars }) {  const containerRef = useRef(null);
+export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars,onOpenVault }) {  const containerRef = useRef(null);
   
   // 🔥 FIX: A tiny 50ms timeout ensures Lenis renders the page height before resetting!
   useEffect(() => {
@@ -84,6 +84,24 @@ useEffect(() => {
           ⏭ Skip Intro
         </button>
       )}
+
+      {/* 🧠 THE VAULT PORTAL BUTTON */}
+        <motion.button 
+          onClick={onOpenVault} 
+          whileHover={{ scale: 1.05, letterSpacing: "0.4em" }}
+          whileTap={{ scale: 0.95 }}
+          className="relative group mt-6 md:mt-8 px-10 py-4 border border-white/20 rounded-full overflow-hidden backdrop-blur-md transition-all duration-500"
+        >
+          {/* Animated Glow Background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#8b5cf6]/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+          
+          <span className="relative z-10 text-xs md:text-sm font-mono tracking-[0.2em] text-white/80 uppercase group-hover:text-white transition-colors duration-300">
+            Access The Vault
+          </span>
+          
+          {/* Outer glowing halo */}
+          <div className="absolute inset-0 border border-white/0 rounded-full shadow-[0_0_0px_rgba(139,92,246,0)] group-hover:border-[#8b5cf6]/50 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all duration-500" />
+        </motion.button>
 {/* ✨ THE NEW SKIP TO AVATARS BUTTON */}
         <button 
           onClick={onSkipToAvatars} /* 👈 Link this to the function that opens your CosmicHub! */

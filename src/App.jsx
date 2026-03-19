@@ -5,11 +5,14 @@ import IntroSequence from './components/IntroSequence';
 import WeaponShowcase from './components/WeaponShowcase';
 import CosmicHub from './components/CosmicHub'; 
 import GlobalAudio from './components/GlobalAudio';
+// ✨ IMPORT THE NEW LOBBY ✨
+import RandomRealisations from './components/RandomRealisations'; 
+
 
 export default function App() {
   const [view, setView] = useState('intro');
   const [guide, setGuide] = useState(null); 
-  const [skipIntro, setSkipIntro] = useState(false); // 🔥 Remembers if they already watched it!
+  const [skipIntro, setSkipIntro] = useState(false); 
 
   // The Master Scroll Engine
   useEffect(() => {
@@ -25,25 +28,30 @@ export default function App() {
   };
 
   const handleBackToSelection = () => {
-    setSkipIntro(true); // 🔥 Automatically skip intro when returning!
+    setSkipIntro(true); 
     setView('intro');
   };
 
-  // 🚀 ✨ THE NEW MAGIC TELEPORT FUNCTION
   const handleSkipToAvatars = () => {
-    setGuide('vishnu'); // Force the guide to Vishnu so the Hub allows entry
-    setView('hub');     // Teleport straight to the Cosmic Hub
+    setGuide('vishnu'); 
+    setView('hub');     
+  };
+
+  // 🧠 ✨ THE NEW VAULT TELEPORT FUNCTION
+  const handleOpenVault = () => {
+    setView('realisations');
   };
 
   return (
     <div className="w-full min-h-screen bg-[#010101] text-white selection:bg-[#fbbf24]/30">
       <GlobalAudio />
-      {/* Pass the startAtBottom AND our new onSkipToAvatars prop! */}
+      
       {view === 'intro' && (
         <IntroSequence 
           onUnlock={handleUnlock} 
           startAtBottom={skipIntro} 
-          onSkipToAvatars={handleSkipToAvatars} // 👈 Passed down to the VIP button!
+          onSkipToAvatars={handleSkipToAvatars} 
+          onOpenVault={handleOpenVault} // 👈 Pass it down to the intro screen!
         />
       )}
 
@@ -57,6 +65,11 @@ export default function App() {
 
       {view === 'hub' && guide === 'vishnu' && (
         <CosmicHub onBack={() => setView('showcase')} />
+      )}
+
+      {/* 🌌 RENDER THE VAULT WHEN ACTIVE */}
+      {view === 'realisations' && (
+        <RandomRealisations onBackToHub={handleBackToSelection} />
       )}
 
     </div>
