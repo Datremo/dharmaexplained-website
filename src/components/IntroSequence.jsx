@@ -37,7 +37,7 @@ const FlyingStars = ({ smoothProgress }) => {
   );
 };
 
-export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars,onOpenVault }) {  const containerRef = useRef(null);
+export default function IntroSequence({ onUnlock, startAtBottom, onSkipToAvatars, onOpenVault, onEmergency }) {  const containerRef = useRef(null);
   
   // 🔥 FIX: A tiny 50ms timeout ensures Lenis renders the page height before resetting!
   useEffect(() => {
@@ -84,6 +84,17 @@ useEffect(() => {
           ⏭ Skip Intro
         </button>
       )}
+      {/* 🚨 THE EMERGENCY KILLSWITCH BUTTON */}
+      <button 
+        onClick={onEmergency} 
+        className="fixed top-6 left-6 z-[100] px-4 md:px-6 py-2 bg-[#ef4444]/10 border border-[#ef4444] rounded-full text-[#ef4444] font-black text-[10px] md:text-xs tracking-[0.3em] uppercase hover:bg-[#ef4444] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_30px_rgba(239,68,68,0.5)] flex items-center gap-2 md:gap-3 group"
+      >
+        <span className="relative flex h-2 w-2 md:h-3 md:w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef4444] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#ef4444] group-hover:bg-white transition-colors"></span>
+        </span>
+        EMERGENCY
+      </button>
 
       {/* 🧠 THE VAULT PORTAL BUTTON */}
         <motion.button 
@@ -119,9 +130,7 @@ useEffect(() => {
 
         <motion.div style={{ clipPath }} className="absolute inset-0 z-10 w-full h-full bg-[#020202] flex items-center justify-center shadow-[0_0_100px_rgba(251,191,36,0.1)]">
           <div className="absolute inset-0 z-0"><Canvas camera={{ position: [0, 0, 5], fov: 60 }}><FlyingStars smoothProgress={smoothProgress} /></Canvas></div>
-          
-          {/* ... ALL OF YOUR EXACT SAME TEXT BLOCKS GO HERE! ... */}
-          
+                    
           {/* Just to keep the code block clean, keep your existing text beats and buttons exactly as they were here! */}
           <motion.div style={{ opacity: text1Opacity }} className="absolute z-10 flex flex-col items-center text-center px-6 pointer-events-none">
              <h2 className="text-white/50 text-xl md:text-3xl font-serif uppercase tracking-[0.4em] mb-4">Before time existed, there was only</h2>

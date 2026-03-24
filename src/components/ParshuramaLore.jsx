@@ -386,6 +386,7 @@ const CinematicEffects = ({ scrollProgress, isMobile }) => {
 // 🎬 THE MAIN EDITORIAL SCROLL COMPONENT
 // --------------------------------------------------------
 export default function ParshuramaLore({ onBack }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
  

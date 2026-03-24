@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Icosahedron, Sphere, Torus, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise, Glitch } from '@react-three/postprocessing';
@@ -154,8 +154,9 @@ const MentalStateEffects = ({ scrollProgress, isMobile }) => {
 // --------------------------------------------------------
 // ⚔️ MAIN EDITORIAL COMPONENT
 // --------------------------------------------------------
-export default function LustBreaker({ onBack, onAscend }) {
+export default function LustBreaker({ onBack, onAscend, onSwitchProtocol }) { 
   const [isMobile, setIsMobile] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   useEffect(() => { 
     window.scrollTo(0, 0); 
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -233,7 +234,95 @@ export default function LustBreaker({ onBack, onAscend }) {
   return (
     <motion.div ref={containerRef} style={{ backgroundColor: bgColor }} className="relative w-full h-[3200vh] font-sans text-white">
       <div className="hidden md:block"><CinematicCursor /></div>
+{/* ⚡ PREMIUM GLASSMORPHIC PROTOCOL SWITCHER */}
+      <div 
+        className="fixed top-6 right-6 z-[100] flex flex-col items-end"
+        onMouseEnter={() => setIsMenuOpen(true)}
+        onMouseLeave={() => setIsMenuOpen(false)}
+      >
+        
+        {/* THE ACTIVE PILL BUTTON */}
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="relative px-5 md:px-6 py-2.5 bg-black/20 border border-white/10 rounded-full text-white/90 text-[10px] md:text-xs tracking-[0.2em] uppercase backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] cursor-pointer flex items-center gap-3 md:gap-4 transition-colors hover:border-[#fbbf24]/50 hover:bg-black/40 overflow-hidden group"
+        >
+          {/* Subtle animated gradient inside the button */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#fbbf24]/10 to-transparent -translate-x-full group-hover:animate-[glint_2s_ease-in-out_infinite]" />
+          
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fbbf24] opacity-60"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#fbbf24] shadow-[0_0_10px_rgba(251,191,36,1)]"></span>
+          </span>
+          <span className="relative z-10 font-medium">Protocol OS</span> 
+          <motion.span 
+            animate={{ rotate: isMenuOpen ? 180 : 0 }} 
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="text-[8px] opacity-50 relative z-10"
+          >
+            ▼
+          </motion.span>
+        </motion.button>
+        
+        {/* THE GLASS DROPDOWN PANEL */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10, scale: 0.95, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, scale: 0.95, filter: "blur(10px)" }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="absolute top-14 right-0 w-64 md:w-72 origin-top-right"
+            >
+              {/* Ultra-Blur Container */}
+              <div className="bg-[#050505]/40 border border-white/10 rounded-3xl backdrop-blur-3xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden p-2 relative">
+                
+                {/* Internal Glow Effect */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#fbbf24] rounded-full blur-[80px] opacity-20 pointer-events-none" />
 
+                <div className="px-4 py-3 border-b border-white/5 mb-2">
+                  <p className="text-[8px] font-mono tracking-[0.4em] text-white/40 uppercase">Select Override Phase</p>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  {[
+                    { id: 'lustbreaker', num: '01', name: 'Urge Killer', color: 'group-hover:text-[#ef4444]', border: 'group-hover:border-[#ef4444]/30' },
+                    { id: 'mayaprotocol', num: '02', name: 'Shatter Maya', color: 'group-hover:text-[#b026ff]', border: 'group-hover:border-[#b026ff]/30' },
+                    { id: 'neuralreality', num: '03', name: 'Brain Science', color: 'group-hover:text-[#00ccff]', border: 'group-hover:border-[#00ccff]/30' },
+                    { id: 'lifesaverprotocol', num: '04', name: 'Tactical Guide', color: 'group-hover:text-white', border: 'group-hover:border-white/30' },
+                    { id: 'karmaprotocol', num: '05', name: 'The Oath', color: 'group-hover:text-[#fbbf24]', border: 'group-hover:border-[#fbbf24]/30' }
+                  ].map((protocol) => (
+                    <button 
+                      key={protocol.id}
+                      onClick={() => onSwitchProtocol(protocol.id)}
+                      className="group w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-white/5 transition-all duration-300 relative overflow-hidden"
+                    >
+                      {/* Left side: Num & Name */}
+                      <div className="flex items-center gap-4 z-10">
+                        <span className="font-mono text-[9px] tracking-widest text-white/30 transition-colors">
+                          {protocol.num}
+                        </span>
+                        <span className={`font-sans text-xs tracking-widest uppercase text-white/70 transition-colors ${protocol.color}`}>
+                          {protocol.name}
+                        </span>
+                      </div>
+                      
+                      {/* Right side: Animated Arrow */}
+                      <span className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 z-10 text-white/50 text-xs">
+                        &rarr;
+                      </span>
+
+                      {/* Subtle hover background border pulse */}
+                      <div className={`absolute inset-0 border border-transparent rounded-2xl transition-colors ${protocol.border}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       <button onClick={onBack} className="fixed top-4 left-4 md:top-6 md:left-6 z-[100] px-4 md:px-6 py-2 border border-white/50 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-white/20 transition-all mix-blend-difference text-white shadow-[0_0_20px_rgba(255,255,255,0.2)]">
         &larr; Retreat
       </button>

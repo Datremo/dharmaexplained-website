@@ -37,10 +37,24 @@ export default function RandomRealisations({ onBackToHub }) {
   }, [onBackToHub]);
 
   // 3. Safe Construct Opener
+  // 1. THE SCROLL BANK & INJECTOR
+  const savedScrollRef = useRef(0);
+
   const openConstruct = (id) => {
+    savedScrollRef.current = window.scrollY; // Save the exact Grid position
     window.history.pushState({ view: id }, '', '');
     setActiveTab(id);
   };
+
+  useEffect(() => {
+    if (activeTab === null) {
+      // Restore Grid scroll perfectly
+      window.scrollTo({ top: savedScrollRef.current, behavior: 'instant' });
+    } else {
+      // Start Construct at the very top
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [activeTab]);
 // 👈 ADD THIS EFFECT
   useEffect(() => {
     if (activeTab === null) {

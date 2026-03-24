@@ -304,8 +304,11 @@ export default function WeaponShowcase({ guide, onBack, onEnterHub }) {
     <div className="relative w-full h-[500vh] bg-[#010101]">
       
       {!isWarping && (
-        // 🔥 NEW: Text updated to "Back to Selection"
-        <button onClick={onBack} className="fixed top-6 left-6 md:top-8 md:left-8 z-50 px-4 md:px-6 py-2 border border-white/20 rounded-full text-white/70 text-[10px] md:text-xs tracking-widest uppercase hover:bg-white/10 hover:text-white transition-all backdrop-blur-md cursor-pointer flex items-center shadow-2xl">
+        <button 
+          onClick={() => window.history.back()} // 👈 CHANGED THIS
+          className="fixed top-6 left-6 md:top-8 md:left-8 z-50 px-4 md:px-6 py-2 border border-white/20 rounded-full text-white/70 text-[10px] md:text-xs tracking-widest uppercase hover:bg-white/10 hover:text-white transition-all backdrop-blur-md cursor-pointer flex items-center shadow-2xl"
+          style={{ top: 'calc(1.5rem + env(safe-area-inset-top))' }} /* 👈 ADDED SAFE AREA FIX FOR CAMERA HOLE TOO! */
+        >
           ← Back to Selection
         </button>
       )}

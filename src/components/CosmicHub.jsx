@@ -15,27 +15,145 @@ import MayaProtocol from './MayaProtocol';
 import KarmaProtocol from './KarmaProtocol';
 import { setGlobalMusic } from './GlobalAudio'; // Make sure this is at the top of the file!
 import RamaLore from './RamaLore';
+import NeuralReality from './NeuralReality';
+import LifesaverProtocol from './LifesaverProtocol';
+
+// --------------------------------------------------------
+// 🌐 THE HUB MULTI-LANGUAGE DICTIONARY
+// --------------------------------------------------------
+const HUB_TEXT = {
+  en: {
+    exitHub: "← Exit Hub",
+    skipAvatars: "Skip to Avatars ⚡",
+    protocolOjas: "Protocol: Ojas",
+    kshiraSagara: "Kshira Sagara",
+    webDharma: "The Web of Dharma",
+    unfolds: "Unfolds Before You",
+    leaveKarmaTitle: "Leave your Karma",
+    leaveKarmaDesc: "The universe listens. Dump your digital burnout, your realizations, or your deepest stress into the void.",
+    karmaPlaceholder: "I realized today that...",
+    surrenderBtn: "Surrender to Cosmos",
+    shattering: "Shattering Maya...",
+    transmuted: "Transmuted.",
+    karmaJoins: "Your karma joins the infinite.",
+    pressHold: "Press & Hold\nto Ascend",
+    astrolabeTitle: "The Astrolabe of Time",
+    scrollRotate: "Scroll to rotate the wheel ↓",
+    returnAstrolabe: "← Return to Astrolabe",
+    domainOf: "Domain of",
+    forging: "This realm is currently being forged in the cosmos.",
+    dharma: [
+      { title: "The Engine", sub: "Action is your right.", desc: "Every thought sends a ripple through the cosmic ocean. Karma is the absolute physics of the soul." },
+      { title: "Architecture", sub: "Your own path.", desc: "Dharma is the invisible framework holding reality together. It is your ultimate purpose." },
+      { title: "The Core", sub: "Never born, never dies.", desc: "Beneath the ego lies the eternal observer. You are the entire ocean in a drop." },
+      { title: "The Illusion", sub: "Woven by the mind.", desc: "A simulation so perfect that even the gods forget their true nature." }
+    ],
+    avatars: [
+      { name: "MATSYA", desc: "The Fish. Guiding the ark of consciousness through the cosmic deluge." },
+      { name: "KURMA", desc: "The Tortoise. The absolute foundation supporting the churning of the universe." },
+      { name: "VARAHA", desc: "The Boar. Diving into the chaotic abyss to rescue the earth from darkness." },
+      { name: "NARASIMHA", desc: "The Man-Lion. The fierce protector who destroys the ego of the tyrant." },
+      { name: "VAMANA", desc: "The Dwarf. Claiming all three worlds in three cosmic strides." },
+      { name: "PARASHURAMA", desc: "The Warrior. Cleansing the earth of corrupted kings and arrogance." },
+      { name: "RAMA", desc: "The King. The absolute embodiment of Dharma and righteous duty." },
+      { name: "KRISHNA", desc: "The Divine Statesman. The master of Maya, teaching the ultimate truth of the Gita." },
+      { name: "BUDDHA", desc: "The Awakened. Teaching compassion and the cessation of worldly desire." },
+      { name: "KALKI", desc: "The Destroyer. Riding the white horse to burn away the filth of Kalyug." }
+    ]
+  },
+  hi: {
+    exitHub: "← हब से बाहर निकलें",
+    skipAvatars: "अवतारों पर जाएं ⚡",
+    protocolOjas: "प्रोटोकॉल: ओजस",
+    kshiraSagara: "क्षीर सागर",
+    webDharma: "धर्म का जाल",
+    unfolds: "आपके सामने खुल रहा है",
+    leaveKarmaTitle: "अपना कर्म छोड़ें",
+    leaveKarmaDesc: "ब्रह्मांड सुन रहा है। अपनी डिजिटल थकावट, अपने विचार, या अपने सबसे गहरे तनाव को इस शून्य में डाल दें।",
+    karmaPlaceholder: "आज मुझे यह एहसास हुआ कि...",
+    surrenderBtn: "ब्रह्मांड को समर्पित करें",
+    shattering: "माया टूट रही है...",
+    transmuted: "रूपांतरित।",
+    karmaJoins: "आपका कर्म अनंत में मिल गया है।",
+    pressHold: "आरोहण के लिए\nदबाकर रखें",
+    astrolabeTitle: "समय का एस्ट्रोलेब",
+    scrollRotate: "पहिया घुमाने के लिए स्क्रॉल करें ↓",
+    returnAstrolabe: "← एस्ट्रोलेब पर लौटें",
+    domainOf: "का क्षेत्र",
+    forging: "यह क्षेत्र वर्तमान में ब्रह्मांड में बनाया जा रहा है।",
+    dharma: [
+      { title: "इंजन", sub: "कर्म आपका अधिकार है।", desc: "हर विचार ब्रह्मांडीय महासागर में एक लहर भेजता है। कर्म आत्मा की परम भौतिकी है।" },
+      { title: "वास्तुकला", sub: "आपका अपना मार्ग।", desc: "धर्म वह अदृश्य ढांचा है जो वास्तविकता को एक साथ बांधे रखता है। यह आपका अंतिम उद्देश्य है।" },
+      { title: "मूल", sub: "न कभी जन्म लेता है, न कभी मरता है।", desc: "अहंकार के नीचे शाश्वत द्रष्टा छिपा है। आप एक बूंद में पूरा महासागर हैं।" },
+      { title: "भ्रम", sub: "मन द्वारा बुना गया।", desc: "एक सिमुलेशन इतना परिपूर्ण कि देवता भी अपना वास्तविक स्वरूप भूल जाते हैं।" }
+    ],
+    avatars: [
+      { name: "मत्स्य", desc: "मछली। ब्रह्मांडीय प्रलय के माध्यम से चेतना की नाव का मार्गदर्शन।" },
+      { name: "कूर्म", desc: "कछुआ। ब्रह्मांड के मंथन का समर्थन करने वाली पूर्ण नींव।" },
+      { name: "वराह", desc: "जंगली सूअर। पृथ्वी को अंधकार से बचाने के लिए अराजक रसातल में गोता लगाना।" },
+      { name: "नरसिंह", desc: "मानव-सिंह। भयंकर रक्षक जो अत्याचारी के अहंकार को नष्ट करता है।" },
+      { name: "वामन", desc: "बौना। तीन ब्रह्मांडीय कदमों में तीनों लोकों पर दावा करना।" },
+      { name: "परशुराम", desc: "योद्धा। भ्रष्ट राजाओं और अहंकार की पृथ्वी को शुद्ध करना।" },
+      { name: "राम", desc: "राजा। धर्म और धार्मिक कर्तव्य का पूर्ण अवतार।" },
+      { name: "कृष्ण", desc: "दिव्य राजनेता। माया के स्वामी, गीता के परम सत्य की शिक्षा देते हुए।" },
+      { name: "बुद्ध", desc: "जाग्रत। करुणा और सांसारिक इच्छाओं की समाप्ति की शिक्षा।" },
+      { name: "कल्कि", desc: "संहारकर्ता। कलियुग की गंदगी को जलाने के लिए सफेद घोड़े पर सवार।" }
+    ]
+  },
+  mr: {
+    exitHub: "← हब मधून बाहेर पडा",
+    skipAvatars: "अवतार पहा ⚡",
+    protocolOjas: "प्रोटोकॉल: ओजस",
+    kshiraSagara: "क्षीर सागर",
+    webDharma: "धर्माचे जाळे",
+    unfolds: "तुमच्या समोर उलगडत आहे",
+    leaveKarmaTitle: "तुमचे कर्म सोडा",
+    leaveKarmaDesc: "ब्रह्मांड ऐकत आहे. तुमचा डिजिटल थकवा, तुमचे विचार किंवा तुमचा सर्वात खोल ताण या पोकळीत सोडून द्या.",
+    karmaPlaceholder: "आज मला जाणवले की...",
+    surrenderBtn: "ब्रह्मांडाला समर्पित करा",
+    shattering: "माया भंग पावत आहे...",
+    transmuted: "रूपांतरित.",
+    karmaJoins: "तुमचे कर्म अनंतात विलीन झाले आहे.",
+    pressHold: "वर जाण्यासाठी\nदाबून ठेवा",
+    astrolabeTitle: "काळाचे एस्ट्रोलेब",
+    scrollRotate: "चाक फिरवण्यासाठी स्क्रोल करा ↓",
+    returnAstrolabe: "← एस्ट्रोलेब वर परत जा",
+    domainOf: "चे क्षेत्र",
+    forging: "हे क्षेत्र सध्या ब्रह्मांडात घडवले जात आहे.",
+    dharma: [
+      { title: "इंजिन", sub: "कर्म हा तुमचा अधिकार आहे.", desc: "प्रत्येक विचार वैश्विक महासागरात एक लहर निर्माण करतो. कर्म हे आत्म्याचे परिपूर्ण भौतिकशास्त्र आहे." },
+      { title: "वास्तुकला", sub: "तुमचा स्वतःचा मार्ग.", desc: "धर्म हा तो अदृश्य सांगाडा आहे जो वास्तवाला एकत्र बांधून ठेवतो. हा तुमचा अंतिम हेतू आहे." },
+      { title: "मूळ", sub: "कधीही जन्म घेत नाही, कधीही मरत नाही.", desc: "अहंकाराच्या खाली शाश्वत दृष्टा लपलेला असतो. तुम्ही एका थेंबातला संपूर्ण महासागर आहात." },
+      { title: "भ्रम", sub: "मनाने विणलेले.", desc: "एक असे परिपूर्ण सिमुलेशन की देव सुद्धा त्यांचे खरे स्वरूप विसरतात." }
+    ],
+    avatars: [
+      { name: "मत्स्य", desc: "मासा. वैश्विक प्रलयातून जाणिवेच्या नावेला मार्गदर्शन करणारा." },
+      { name: "कूर्म", desc: "कासव. विश्वाच्या मंथनाला आधार देणारा परिपूर्ण पाया." },
+      { name: "वराह", desc: "रानडुक्कर. पृथ्वीला अंधारातून वाचवण्यासाठी अराजकतेच्या गर्तेत डुबकी मारणारा." },
+      { name: "नरसिंह", desc: "मानव-सिंह. अत्याचाऱ्याचा अहंकार नष्ट करणारा भयंकर रक्षक." },
+      { name: "वामन", desc: "बुटका. तीन वैश्विक पावलांमध्ये तिन्ही जगांवर हक्क सांगणारा." },
+      { name: "परशुराम", desc: "योद्धा. भ्रष्ट राजे आणि अहंकारापासून पृथ्वीला शुद्ध करणारा." },
+      { name: "राम", desc: "राजा. धर्म आणि नीतिमत्तेचा परिपूर्ण अवतार." },
+      { name: "कृष्ण", desc: "दैवी मुत्सद्दी. मायेचा स्वामी, गीतेचे परम सत्य शिकवणारा." },
+      { name: "बुद्ध", desc: "जागृत. करुणा आणि ऐहिक इच्छांच्या अंताची शिकवण देणारा." },
+      { name: "कल्कि", desc: "संहारकर्ता. कलियुगाची घाण जाळून टाकण्यासाठी पांढऱ्या घोड्यावर स्वार होणारा." }
+    ]
+  }
+};
+
 // --------------------------------------------------------
 // 📜 THE LORE DATA
 // --------------------------------------------------------
 const DHARMA_LORE = [
-  { id: "01", side: "left", phase: "KARMA", title: "The Engine", subtitle: "Action is your right.", desc: "Every thought sends a ripple through the cosmic ocean. Karma is the absolute physics of the soul.", color: "#ff3366" },
-  { id: "02", side: "right", phase: "DHARMA", title: "Architecture", subtitle: "Your own path.", desc: "Dharma is the invisible framework holding reality together. It is your ultimate purpose.", color: "#00ccff" },
-  { id: "03", side: "left", phase: "ATMAN", title: "The Core", subtitle: "Never born, never dies.", desc: "Beneath the ego lies the eternal observer. You are the entire ocean in a drop.", color: "#fbbf24" },
-  { id: "04", side: "right", phase: "MAYA", title: "The Illusion", subtitle: "Woven by the mind.", desc: "A simulation so perfect that even the gods forget their true nature.", color: "#b026ff" }
+  { id: "01", side: "left", phase: "KARMA", color: "#ff3366" },
+  { id: "02", side: "right", phase: "DHARMA", color: "#00ccff" },
+  { id: "03", side: "left", phase: "ATMAN", color: "#fbbf24" },
+  { id: "04", side: "right", phase: "MAYA", color: "#b026ff" }
 ];
 
 const DASHAVATARA = [
-  { id: "I", name: "MATSYA", desc: "The Fish. Guiding the ark of consciousness through the cosmic deluge." },
-  { id: "II", name: "KURMA", desc: "The Tortoise. The absolute foundation supporting the churning of the universe." },
-  { id: "III", name: "VARAHA", desc: "The Boar. Diving into the chaotic abyss to rescue the earth from darkness." },
-  { id: "IV", name: "NARASIMHA", desc: "The Man-Lion. The fierce protector who destroys the ego of the tyrant." },
-  { id: "V", name: "VAMANA", desc: "The Dwarf. Claiming all three worlds in three cosmic strides." },
-  { id: "VI", name: "PARASHURAMA", desc: "The Warrior. Cleansing the earth of corrupted kings and arrogance." },
-  { id: "VII", name: "RAMA", desc: "The King. The absolute embodiment of Dharma and righteous duty." },
-  { id: "VIII", name: "KRISHNA", desc: "The Divine Statesman. The master of Maya, teaching the ultimate truth of the Gita." },
-  { id: "IX", name: "BUDDHA", desc: "The Awakened. Teaching compassion and the cessation of worldly desire." },
-  { id: "X", name: "KALKI", desc: "The Destroyer. Riding the white horse to burn away the filth of Kalyug." }
+  { id: "I" }, { id: "II" }, { id: "III" }, { id: "IV" }, { id: "V" },
+  { id: "VI" }, { id: "VII" }, { id: "VIII" }, { id: "IX" }, { id: "X" }
 ];
 
 // --------------------------------------------------------
@@ -287,7 +405,6 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
                 onClick={(e) => {
                   e.stopPropagation(); 
                   if (isActive) {
-                    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                     setActiveLore(DASHAVATARA[index].id); 
                   }
                 }}
@@ -316,10 +433,12 @@ const DashavataraAstrolabe = ({ journeyPhase, activeAvatar, setActiveLore }) => 
 // --------------------------------------------------------
 // 🎴 HTML LORE CARD (Phase 1)
 // --------------------------------------------------------
-const LoreCard = ({ section, setActivePhase, isGlitching }) => {
+const LoreCard = ({ section, index, lang, setActivePhase, isGlitching }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { margin: "-30% 0px -30% 0px" });
   useEffect(() => { if (isInView) setActivePhase(section.id); }, [isInView, section.id, setActivePhase]);
+
+  const content = HUB_TEXT[lang].dharma[index];
 
   return (
     <div ref={ref} className="relative w-full h-[130vh] flex items-center justify-center pointer-events-none">
@@ -331,10 +450,11 @@ const LoreCard = ({ section, setActivePhase, isGlitching }) => {
           className={`${section.side === 'left' ? 'order-1 items-start text-left' : 'order-2 items-start text-left'} flex flex-col justify-center pointer-events-auto`}
         >
           <div className={`max-w-md ${section.id === "04" && isGlitching ? 'animate-pulse skew-x-2 drop-shadow-[0_0_20px_rgba(176,38,255,0.8)]' : ''}`}>
-            <h1 className="text-4xl md:text-6xl font-serif text-white uppercase mb-4 drop-shadow-2xl">{section.title}</h1>
+            <h1 className="text-4xl md:text-6xl font-serif text-white uppercase mb-4 drop-shadow-2xl">{content.title}</h1>
             <div className="backdrop-blur-md bg-white/[0.03] border border-white/10 p-6 rounded-2xl shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 opacity-20" style={{ backgroundColor: section.color }}></div>
-              <p className="text-sm text-white/60 leading-relaxed font-light">{section.desc}</p>
+              <h2 className="text-[#fbbf24] text-sm uppercase tracking-widest mb-2 font-bold">{content.sub}</h2>
+              <p className="text-sm text-white/60 leading-relaxed font-light">{content.desc}</p>
             </div>
           </div>
         </motion.div>
@@ -346,22 +466,24 @@ const LoreCard = ({ section, setActivePhase, isGlitching }) => {
 // --------------------------------------------------------
 // 🪐 DEFAULT LORE PAGE 
 // --------------------------------------------------------
-const DefaultLore = ({ avatar, onBack }) => {
+const DefaultLore = ({ avatar, index, lang, onBack }) => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const content = HUB_TEXT[lang].avatars[index];
+
   return (
     <div className="relative w-full h-screen flex flex-col items-center justify-center bg-[#0a0514] font-sans text-white overflow-hidden">
       <button onClick={onBack} className="absolute top-6 left-6 z-[100] px-6 py-2 border border-white/30 rounded-full text-white/70 text-xs tracking-widest uppercase hover:bg-white/10 transition-all backdrop-blur-md cursor-pointer">
-        ← Return to Astrolabe
+        {HUB_TEXT[lang].returnAstrolabe}
       </button>
       
       <div className="flex flex-col items-center text-center max-w-2xl px-6 relative z-10">
-        <h3 className="text-[#00ccff] tracking-[0.5em] uppercase text-xs md:text-sm font-mono mb-4">Avatar {avatar.id} // {avatar.name}</h3>
+        <h3 className="text-[#00ccff] tracking-[0.5em] uppercase text-xs md:text-sm font-mono mb-4">Avatar {avatar.id} // {content.name}</h3>
         <h1 className="text-5xl md:text-7xl font-serif uppercase tracking-widest mb-6 drop-shadow-[0_0_30px_rgba(0,204,255,0.4)]">
-          Domain of {avatar.name}
+          {HUB_TEXT[lang].domainOf} {content.name}
         </h1>
         <div className="w-[1px] h-16 bg-gradient-to-b from-[#00ccff] to-transparent mb-8" />
         <p className="text-white/50 text-sm md:text-base font-light tracking-widest uppercase animate-pulse">
-          This realm is currently being forged in the cosmos.
+          {HUB_TEXT[lang].forging}
         </p>
       </div>
       
@@ -376,8 +498,16 @@ const DefaultLore = ({ avatar, onBack }) => {
 // 🚀 THE MAIN HUB EXPORT
 // ==========================================
 export default function CosmicHub({ onBack }) {
+  const [lang, setLang] = useState('en'); // 👈 ADD THIS!
   useEffect(() => { window.scrollTo(0, 0); }, []);
   
+  // ⚡ LISTEN FOR THE EMERGENCY TELEPORT
+  useEffect(() => {
+    const handleOpenOjas = () => setActiveLore('lustbreaker');
+    window.addEventListener('openOjas', handleOpenOjas);
+    return () => window.removeEventListener('openOjas', handleOpenOjas);
+  }, []);
+
   const [activeAvatar, setActiveAvatar] = useState(0);
   const [activeLore, setActiveLore] = useState(null);
   const [activePhase, setActivePhase] = useState(null);
@@ -414,11 +544,25 @@ export default function CosmicHub({ onBack }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []); // <--- EMPTY ARRAY IS CRITICAL
 
-  // 3. Safe Lore Opener
+  // 3. The Scroll Memory Bank & Safe Lore Opener
+  const savedScrollRef = useRef(0);
+
   const openLore = (id) => {
+    savedScrollRef.current = window.scrollY; // Save your exact spot in the Hub!
     window.history.pushState({ page: 'lore', id }, '', '');
     setActiveLore(id);
   };
+
+  // 4. The Teleporter
+  useEffect(() => {
+    if (activeLore === null) {
+      // Instantly restore Hub scroll when you come back
+      window.scrollTo({ top: savedScrollRef.current, behavior: 'instant' });
+    } else {
+      // Force new Lore pages to start perfectly at the top
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [activeLore]);
   
   // 🔥 THE FIX: Zero-bounce math applied to the main scroll!
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
@@ -491,10 +635,19 @@ export default function CosmicHub({ onBack }) {
 
  if (activeLore) {
     if (activeLore === 'lustbreaker') {
-      return <LustBreaker onBack={() => window.history.back()} onAscend={() => setActiveLore('mayaprotocol')} />;
+      return <LustBreaker onBack={() => window.history.back()} onAscend={() => setActiveLore('mayaprotocol')} onSwitchProtocol={(protocolId) => setActiveLore(protocolId)} />;
     }
     if (activeLore === 'mayaprotocol') {
-      return <MayaProtocol onBack={() => window.history.back()} onAwaken={() => setActiveLore('karmaprotocol')} />;
+      // 🔗 MAYA NOW LEADS TO THE BRAIN
+      return <MayaProtocol onBack={() => window.history.back()} onAwaken={() => setActiveLore('neuralreality')} onSwitchProtocol={(protocolId) => setActiveLore(protocolId)} />;
+    }
+    if (activeLore === 'neuralreality') {
+      // 🔗 THE BRAIN NOW LEADS TO THE LIFESAVER
+      return <NeuralReality onBack={() => window.history.back()} onNext={() => setActiveLore('lifesaverprotocol')} onSwitchProtocol={(protocolId) => setActiveLore(protocolId)} />;
+    }
+    if (activeLore === 'lifesaverprotocol') {
+      // 🔗 THE LIFESAVER NOW LEADS TO THE GRAND FINALE: KARMA!
+      return <LifesaverProtocol onBack={() => window.history.back()} onNext={() => setActiveLore('karmaprotocol')} onSwitchProtocol={(protocolId) => setActiveLore(protocolId)}/>;
     }
     if (activeLore === 'karmaprotocol') {
       return <KarmaProtocol onEnterHub={() => setActiveLore(null)} />;
@@ -513,33 +666,50 @@ export default function CosmicHub({ onBack }) {
       setActiveLore(null);
       return null;
     }
-    return <DefaultLore avatar={activeAvatarData} onBack={() => window.history.back()} />;
+    return <DefaultLore avatar={activeAvatarData} index={activeAvatarIndex} lang={lang} onBack={() => window.history.back()} />;
   }
 
   return (
     <div className={`relative w-full bg-[#0a0514] font-sans text-white selection:bg-[#00ccff]/30 ${journeyPhase === 'akashic' ? 'h-screen overflow-hidden' : ''}`}>
       
-      <button onClick={() => window.history.back()} className="fixed top-6 left-6 z-[90] px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[#fbbf24] text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all backdrop-blur-md cursor-pointer shadow-lg">← Exit Hub</button>
+      <button onClick={() => window.history.back()} className="fixed top-6 left-6 z-[90] px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[#fbbf24] text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all backdrop-blur-md cursor-pointer shadow-lg">
+        {HUB_TEXT[lang].exitHub}
+      </button>
+
+      {/* 👇 NEW LANGUAGE SWITCHER BUTTON */}
+      <div className="fixed top-6 right-6 z-[100] flex bg-black/50 border border-[#fbbf24]/30 rounded-full backdrop-blur-md overflow-hidden">
+        {['en', 'hi', 'mr'].map((l) => (
+          <button 
+            key={l} 
+            onClick={() => setLang(l)}
+            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all ${lang === l ? 'bg-[#fbbf24] text-black' : 'text-white/50 hover:text-white'}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
 
       {journeyPhase === 'descent' && (
         <button 
           onClick={handleAwaken} 
-          className="fixed top-6 right-6 z-[90] px-6 py-2 bg-white/5 border border-white/20 rounded-full text-white/80 text-xs tracking-widest uppercase hover:bg-white/10 transition-all backdrop-blur-md cursor-pointer shadow-lg"
+          className="fixed top-20 right-6 z-[90] px-6 py-2 bg-white/5 border border-white/20 rounded-full text-white/80 text-xs tracking-widest uppercase hover:bg-white/10 transition-all backdrop-blur-md cursor-pointer shadow-lg"
         >
-          Skip to Avatars ⚡
+          {HUB_TEXT[lang].skipAvatars}
         </button>
       )}
-{/* 🔥 TEMPORARY LUST BREAKER VIP BUTTON */}
+
+      {/* 🔥 TEMPORARY LUST BREAKER VIP BUTTON */}
       <button 
-      onClick={() => openLore('lustbreaker')} // 👈 CHANGED
+        onClick={() => openLore('lustbreaker')} 
         className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] px-4 md:px-6 py-2 md:py-3 bg-[#dc2626]/10 border border-[#dc2626] rounded-full text-[#dc2626] font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase hover:bg-[#dc2626] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_30px_rgba(220,38,38,0.4)] flex items-center gap-3 group"
       >
         <span className="relative flex h-2 w-2 md:h-3 md:w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef4444] opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#dc2626] group-hover:bg-white transition-colors"></span>
         </span>
-        Protocol: Ojas
+        {HUB_TEXT[lang].protocolOjas}
       </button>
+
       {journeyPhase === 'descent' && (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden flex flex-col justify-between">
           <motion.div style={{ scaleY: eyeScaleY, originY: 0 }} className="w-full h-1/2 bg-black shadow-[0_10px_50px_rgba(0,204,255,0.2)]" />
@@ -553,18 +723,23 @@ export default function CosmicHub({ onBack }) {
             <img src="/kshirsagar.png" alt="Vishnu" className="h-[80vh] md:h-[95vh] w-auto object-contain drop-shadow-[0_0_60px_rgba(0,204,255,0.5)]" />
           </motion.div>
           <motion.div style={{ opacity: titleOpacity, scale: titleScale }} className="fixed inset-0 z-[65] flex flex-col items-center justify-center pointer-events-none text-center px-6">
-            <h1 className="text-[#00ccff] text-4xl md:text-7xl font-serif tracking-[0.5em] md:tracking-[0.8em] uppercase drop-shadow-[0_0_40px_rgba(0,204,255,0.6)] ml-4">Kshira Sagara</h1>
+            <h1 className="text-[#00ccff] text-4xl md:text-7xl font-serif tracking-[0.5em] md:tracking-[0.8em] uppercase drop-shadow-[0_0_40px_rgba(0,204,255,0.6)] ml-4">
+              {HUB_TEXT[lang].kshiraSagara}
+            </h1>
           </motion.div>
           <motion.div style={{ opacity: webOfDharmaOpacity, y: webOfDharmaY, scale: webOfDharmaScale }} className="fixed inset-0 z-[50] flex flex-col items-center justify-center pointer-events-none text-center px-6">
-            <h2 className="text-[#fbbf24] tracking-[0.5em] md:tracking-[0.8em] uppercase text-2xl md:text-5xl font-serif drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]">The Web of Dharma</h2>
-            <p className="text-white/60 tracking-[0.4em] uppercase text-xs md:text-sm mt-6">Unfolds Before You</p>
+            <h2 className="text-[#fbbf24] tracking-[0.5em] md:tracking-[0.8em] uppercase text-2xl md:text-5xl font-serif drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]">
+              {HUB_TEXT[lang].webDharma}
+            </h2>
+            <p className="text-white/60 tracking-[0.4em] uppercase text-xs md:text-sm mt-6">
+              {HUB_TEXT[lang].unfolds}
+            </p>
             <div className="w-[1px] h-32 bg-gradient-to-b from-[#fbbf24]/60 to-transparent mt-10 mx-auto" />
           </motion.div>
         </>
       )}
 
       <div className={`fixed inset-0 z-0 ${journeyPhase === 'astrolabe' ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        {/* 🔥 Optimization: Capped the DPR to save mobile rendering! */}
         <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 8], fov: 60 }}>
           <ambientLight intensity={0.4} />
           <EffectComposer disableNormalPass>
@@ -578,34 +753,32 @@ export default function CosmicHub({ onBack }) {
           <CosmicArtifacts activePhase={activePhase} journeyPhase={journeyPhase} />
           <AkashicGalaxy journeyPhase={journeyPhase} />
           <MokshaCore isHolding={isHolding} onAwaken={handleAwaken} journeyPhase={journeyPhase} />
-          <DashavataraAstrolabe journeyPhase={journeyPhase} 
-          activeAvatar={activeAvatar} 
-          setActiveLore={openLore}/>        
-          </Canvas>
+          <DashavataraAstrolabe journeyPhase={journeyPhase} activeAvatar={activeAvatar} setActiveLore={openLore}/>        
+        </Canvas>
       </div>
 
       {journeyPhase === 'descent' && (
         <div className="relative z-10 w-full flex flex-col items-center">
           <div className="w-full h-[500vh] pointer-events-none" />
           
-          {DHARMA_LORE.map((section) => (
-            <LoreCard key={section.id} section={section} setActivePhase={setActivePhase} isGlitching={activePhase === '04'} />
+          {DHARMA_LORE.map((section, index) => (
+            <LoreCard key={section.id} section={section} index={index} lang={lang} setActivePhase={setActivePhase} isGlitching={activePhase === '04'} />
           ))}
 
           <div className="w-full min-h-[120vh] flex flex-col items-center justify-center pointer-events-auto px-6 relative z-50 mt-20">
              <div className="w-full max-w-2xl flex flex-col items-center">
-               <h2 className="text-[#fbbf24] text-xl md:text-3xl font-serif uppercase tracking-[0.4em] mb-4 text-center">Leave your Karma</h2>
+               <h2 className="text-[#fbbf24] text-xl md:text-3xl font-serif uppercase tracking-[0.4em] mb-4 text-center">{HUB_TEXT[lang].leaveKarmaTitle}</h2>
                <p className="text-white/50 text-xs md:text-sm tracking-widest text-center mb-10 leading-relaxed">
-                 The universe listens. Dump your digital burnout, your realizations, or your deepest stress into the void.
+                 {HUB_TEXT[lang].leaveKarmaDesc}
                </p>
                <textarea 
-                 value={journalEntry} onChange={(e) => setJournalEntry(e.target.value)} placeholder="I realized today that..."
+                 value={journalEntry} onChange={(e) => setJournalEntry(e.target.value)} placeholder={HUB_TEXT[lang].karmaPlaceholder}
                  className="w-full h-40 bg-black/40 border border-[#fbbf24]/30 rounded-2xl p-6 text-white placeholder-white/20 backdrop-blur-xl focus:outline-none focus:border-[#fbbf24] transition-all resize-none shadow-[0_0_30px_rgba(0,0,0,0.8)]"
                />
                <button 
                  onClick={handleSurrender} disabled={!journalEntry.trim()}
                  className="mt-8 px-10 py-4 border border-[#fbbf24] text-[#fbbf24] font-bold uppercase tracking-[0.3em] text-xs rounded-full hover:bg-[#fbbf24]/10 hover:shadow-[0_0_40px_rgba(251,191,36,0.4)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-               >Surrender to Cosmos</button>
+               >{HUB_TEXT[lang].surrenderBtn}</button>
              </div>
           </div>
         </div>
@@ -614,7 +787,7 @@ export default function CosmicHub({ onBack }) {
       <AnimatePresence>
         {journeyPhase === 'transmuting' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <h1 className="text-4xl font-serif text-white tracking-widest animate-pulse">Shattering Maya...</h1>
+            <h1 className="text-4xl font-serif text-white tracking-widest animate-pulse">{HUB_TEXT[lang].shattering}</h1>
           </motion.div>
         )}
       </AnimatePresence>
@@ -625,11 +798,11 @@ export default function CosmicHub({ onBack }) {
           onPointerDown={() => setIsHolding(true)} onPointerUp={() => setIsHolding(false)} onPointerLeave={() => setIsHolding(false)}
         >
           <div className="absolute top-[30%] text-center pointer-events-none">
-             <h1 className="text-5xl font-serif text-[#fbbf24] mb-4 tracking-widest drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]">Transmuted.</h1>
-             <p className="text-white/60 tracking-[0.4em] uppercase text-xs">Your karma joins the infinite.</p>
+             <h1 className="text-5xl font-serif text-[#fbbf24] mb-4 tracking-widest drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]">{HUB_TEXT[lang].transmuted}</h1>
+             <p className="text-white/60 tracking-[0.4em] uppercase text-xs">{HUB_TEXT[lang].karmaJoins}</p>
           </div>
           <div className="w-32 h-32 rounded-full border border-white/20 flex items-center justify-center animate-pulse pointer-events-none mt-20">
-             <span className="text-white/80 text-[8px] uppercase tracking-[0.2em] text-center">Press & Hold<br/>to Ascend</span>
+             <span className="text-white/80 text-[8px] uppercase tracking-[0.2em] text-center whitespace-pre-wrap">{HUB_TEXT[lang].pressHold}</span>
           </div>
         </div>
       )}
@@ -638,8 +811,8 @@ export default function CosmicHub({ onBack }) {
         <div ref={astrolabeContainerRef} className="relative z-10 w-full h-[500vh] pointer-events-none">
           <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-between py-20 pointer-events-none">
             <div className="text-center">
-              <h2 className="text-[#fbbf24] text-[10px] tracking-[0.5em] uppercase font-bold mb-4">The Astrolabe of Time</h2>
-              <p className="text-white/40 text-xs tracking-widest uppercase animate-pulse">Scroll to rotate the wheel ↓</p>
+              <h2 className="text-[#fbbf24] text-[10px] tracking-[0.5em] uppercase font-bold mb-4">{HUB_TEXT[lang].astrolabeTitle}</h2>
+              <p className="text-white/40 text-xs tracking-widest uppercase animate-pulse">{HUB_TEXT[lang].scrollRotate}</p>
             </div>
             
             <motion.div 
@@ -649,8 +822,8 @@ export default function CosmicHub({ onBack }) {
               className="max-w-xl text-center bg-black/40 backdrop-blur-md p-8 rounded-[2rem] border border-white/10"
             >
               <h3 className="text-[#00ccff] text-xs font-mono mb-2">{DASHAVATARA[activeAvatar].id} / X</h3>
-              <h1 className="text-4xl md:text-5xl font-serif text-white uppercase tracking-widest mb-4">{DASHAVATARA[activeAvatar].name}</h1>
-              <p className="text-white/70 text-sm leading-relaxed font-light">{DASHAVATARA[activeAvatar].desc}</p>
+              <h1 className="text-4xl md:text-5xl font-serif text-white uppercase tracking-widest mb-4">{HUB_TEXT[lang].avatars[activeAvatar].name}</h1>
+              <p className="text-white/70 text-sm leading-relaxed font-light">{HUB_TEXT[lang].avatars[activeAvatar].desc}</p>
             </motion.div>
           </div>
         </div>
