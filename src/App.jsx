@@ -4,6 +4,7 @@ import AutoScroller from './components/AutoScroller';
 import IntroSequence from './components/IntroSequence';
 import WeaponShowcase from './components/WeaponShowcase';
 import CosmicHub from './components/CosmicHub'; 
+import KailashHub from './components/Shiva/KailashHub';
 import GlobalAudio from './components/GlobalAudio';
 // ✨ IMPORT THE NEW LOBBY ✨
 import RandomRealisations from './components/RandomRealisations'; 
@@ -83,8 +84,14 @@ return (
         />
       )}
 
+      {/* 🌌 VISHNU'S HUB */}
       {view === 'hub' && guide === 'vishnu' && (
         <CosmicHub onBack={() => setView('showcase')} />
+      )}
+
+      {/* 🏔️ SHIVA'S HUB */}
+      {view === 'hub' && guide === 'shiva' && (
+        <KailashHub onBack={() => setView('showcase')} />
       )}
 
       {/* 🌌 RENDER THE VAULT WHEN ACTIVE */}
