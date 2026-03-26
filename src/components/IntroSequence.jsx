@@ -78,51 +78,53 @@ useEffect(() => {
   return (
     <div ref={containerRef} className="relative w-full h-[1500vh] bg-[#010101]">
       
-      {/* 🔥 NEW: Skip Intro Button */}
-      {!startAtBottom && (
-        <button onClick={handleSkip} className="fixed top-6 right-6 z-50 px-4 md:px-6 py-2 border border-white/20 rounded-full text-white/70 text-[10px] md:text-xs tracking-widest uppercase hover:bg-white/10 hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-lg">
-          ⏭ Skip Intro
-        </button>
-      )}
-      {/* 🚨 THE EMERGENCY KILLSWITCH BUTTON */}
+      {/* 🚨 THE EMERGENCY KILLSWITCH (Ultra-compact on mobile) */}
       <button 
         onClick={onEmergency} 
-        className="fixed top-6 left-6 z-[100] px-4 md:px-6 py-2 bg-[#ef4444]/10 border border-[#ef4444] rounded-full text-[#ef4444] font-black text-[10px] md:text-xs tracking-[0.3em] uppercase hover:bg-[#ef4444] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_30px_rgba(239,68,68,0.5)] flex items-center gap-2 md:gap-3 group"
+        className="fixed top-4 left-4 md:top-6 md:left-6 z-[100] px-3 py-1.5 md:px-5 md:py-2 bg-[#ef4444]/10 border border-[#ef4444]/50 rounded-full text-[#ef4444] font-black text-[8px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] uppercase hover:bg-[#ef4444] hover:text-white transition-all backdrop-blur-md cursor-pointer shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center gap-1.5 md:gap-3 group"
       >
-        <span className="relative flex h-2 w-2 md:h-3 md:w-3">
+        <span className="relative flex h-1.5 w-1.5 md:h-2.5 md:w-2.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef4444] opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#ef4444] group-hover:bg-white transition-colors"></span>
+          <span className="relative inline-flex rounded-full h-full w-full bg-[#ef4444] group-hover:bg-white transition-colors"></span>
         </span>
         EMERGENCY
       </button>
 
-      {/* 🧠 THE VAULT PORTAL BUTTON */}
+      {/* 🌌 THE CINEMATIC HUD (Unified & Responsive Stack) */}
+      <div className="fixed top-4 right-4 md:top-6 md:right-6 z-[100] flex flex-col items-end gap-2 md:gap-3 pointer-events-auto">
+        
+        {/* 1. The Vault Portal */}
         <motion.button 
           onClick={onOpenVault} 
-          whileHover={{ scale: 1.05, letterSpacing: "0.4em" }}
-          whileTap={{ scale: 0.95 }}
-          className="relative group mt-6 md:mt-8 px-10 py-4 border border-white/20 rounded-full overflow-hidden backdrop-blur-md transition-all duration-500"
+          whileHover={{ scale: 1.02, letterSpacing: "0.3em" }}
+          whileTap={{ scale: 0.98 }}
+          className="group relative px-3 py-1.5 md:px-5 md:py-2 border border-[#8b5cf6]/30 bg-[#020202]/60 rounded-full overflow-hidden backdrop-blur-xl transition-all duration-300 hover:border-[#8b5cf6]/80 hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]"
         >
-          {/* Animated Glow Background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#8b5cf6]/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-          
-          <span className="relative z-10 text-xs md:text-sm font-mono tracking-[0.2em] text-white/80 uppercase group-hover:text-white transition-colors duration-300">
-            Access The Vault
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#8b5cf6]/20 to-transparent -translate-x-full group-hover:animate-[glint_1.5s_ease-in-out_infinite]" />
+          <span className="relative z-10 text-[8px] md:text-[10px] font-mono tracking-[0.2em] text-[#8b5cf6] uppercase group-hover:text-white transition-colors">
+            Access Vault
           </span>
-          
-          {/* Outer glowing halo */}
-          <div className="absolute inset-0 border border-white/0 rounded-full shadow-[0_0_0px_rgba(139,92,246,0)] group-hover:border-[#8b5cf6]/50 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all duration-500" />
         </motion.button>
-{/* ✨ THE NEW SKIP TO AVATARS BUTTON */}
+
+        {/* 2. Skip to Hub */}
         <button 
-          onClick={onSkipToAvatars} /* 👈 Link this to the function that opens your CosmicHub! */
-          className="px-4 md:px-6 py-2 border border-[#fbbf24]/50 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-[#fbbf24]/20 transition-all mix-blend-difference text-[#fbbf24] shadow-[0_0_15px_rgba(251,191,36,0.3)] backdrop-blur-md group"
+          onClick={onSkipToAvatars} 
+          className="px-3 py-1.5 md:px-5 md:py-2 border border-[#fbbf24]/30 bg-[#020202]/60 rounded-full text-[8px] md:text-[10px] font-mono tracking-[0.2em] uppercase text-[#fbbf24] hover:bg-[#fbbf24]/20 hover:border-[#fbbf24]/80 hover:text-white shadow-lg backdrop-blur-xl transition-all group"
         >
-          Skip to Avatars <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+          Skip to Hub <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
         </button>
 
-      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
-        
+        {/* 3. Fast Forward (HIDDEN ON MOBILE to save screen space!) */}
+        {!startAtBottom && (
+          <button 
+            onClick={handleSkip} 
+            className="hidden md:flex px-5 py-2 border border-white/10 bg-[#020202]/60 rounded-full text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 hover:bg-white/10 hover:border-white/40 hover:text-white shadow-lg backdrop-blur-xl transition-all group"
+          >
+            Fast Forward <span className="inline-block group-hover:translate-y-1 transition-transform">↓</span>
+          </button>
+        )}
+      </div>
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center pointer-events-none">  
         <motion.div style={{ opacity: promptOpacity }} className="absolute z-30 flex flex-col items-center pointer-events-none">
           <h1 className="text-[#fbbf24] text-xs md:text-sm tracking-[0.8em] uppercase font-light drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] mb-8">The Cosmic Origin</h1>
           <p className="text-white/40 text-[10px] tracking-[0.5em] animate-pulse uppercase">Scroll slowly to awaken ↓</p>
@@ -173,36 +175,37 @@ useEffect(() => {
              </h1>
           </motion.div>
 
-          <motion.div style={{ opacity: choiceOpacity }} className="absolute z-10 flex flex-col items-center text-center px-6 pointer-events-auto w-full max-w-5xl">
-             <h2 className="text-[#fbbf24] text-xl md:text-3xl font-serif uppercase tracking-[0.4em] drop-shadow-[0_0_30px_rgba(251,191,36,0.5)]">
+          <motion.div style={{ opacity: choiceOpacity }} className="absolute z-10 flex flex-col items-center justify-center text-center px-4 md:px-6 pointer-events-auto w-full max-w-5xl h-[100dvh] pt-24 pb-28 md:pt-0 md:pb-0">
+             <h2 className="text-[#fbbf24] text-lg md:text-3xl font-serif uppercase tracking-[0.3em] md:tracking-[0.4em] drop-shadow-[0_0_30px_rgba(251,191,36,0.5)]">
                Who do you take as your Soul Guide?
              </h2>
-             <p className="text-white/60 text-[10px] md:text-sm tracking-[0.3em] uppercase max-w-lg leading-relaxed mt-4 mb-16">
+             <p className="text-white/60 text-[8px] md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase max-w-lg leading-relaxed mt-2 md:mt-4 mb-6 md:mb-16">
                To dive deep into yourself and discover a power you never imagined you had.
              </p>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+             
+             {/* The grid is tighter and cards are shorter on mobile */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 w-full max-w-xs md:max-w-full mx-auto">
                
-               <button onClick={() => onUnlock('brahma')} className="group relative w-full h-32 md:h-56 border border-[#ff3366]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#ff3366] hover:shadow-[0_0_40px_rgba(255,51,102,0.3)] transition-all duration-500 cursor-pointer">
+               <button onClick={() => onUnlock('brahma')} className="group relative w-full h-20 md:h-56 border border-[#ff3366]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#ff3366] hover:shadow-[0_0_40px_rgba(255,51,102,0.3)] transition-all duration-500 cursor-pointer">
                  <div className="absolute inset-0 bg-gradient-to-t from-[#ff3366]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-xl md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(255,51,102,0.8)]">Brahma</h3>
-                 <p className="text-[#ff3366] text-[10px] tracking-[0.3em] mt-2 z-10 uppercase font-bold">The Path of Creation</p>
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(255,51,102,0.8)]">Brahma</h3>
+                 <p className="text-[#ff3366] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Creation</p>
                </button>
 
-               <button onClick={() => onUnlock('vishnu')} className="group relative w-full h-32 md:h-56 border border-[#00ccff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#00ccff] hover:shadow-[0_0_40px_rgba(0,204,255,0.3)] transition-all duration-500 cursor-pointer">
+               <button onClick={() => onUnlock('vishnu')} className="group relative w-full h-20 md:h-56 border border-[#00ccff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#00ccff] hover:shadow-[0_0_40px_rgba(0,204,255,0.3)] transition-all duration-500 cursor-pointer">
                  <div className="absolute inset-0 bg-gradient-to-t from-[#00ccff]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-xl md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(0,204,255,0.8)]">Vishnu</h3>
-                 <p className="text-[#00ccff] text-[10px] tracking-[0.3em] mt-2 z-10 uppercase font-bold">The Path of Preservation</p>
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(0,204,255,0.8)]">Vishnu</h3>
+                 <p className="text-[#00ccff] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Preservation</p>
                </button>
 
-               <button onClick={() => onUnlock('shiva')} className="group relative w-full h-32 md:h-56 border border-[#b026ff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#b026ff] hover:shadow-[0_0_40px_rgba(176,38,255,0.3)] transition-all duration-500 cursor-pointer">
+               <button onClick={() => onUnlock('shiva')} className="group relative w-full h-20 md:h-56 border border-[#b026ff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#b026ff] hover:shadow-[0_0_40px_rgba(176,38,255,0.3)] transition-all duration-500 cursor-pointer">
                  <div className="absolute inset-0 bg-gradient-to-t from-[#b026ff]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-xl md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(176,38,255,0.8)]">Shiva</h3>
-                 <p className="text-[#b026ff] text-[10px] tracking-[0.3em] mt-2 z-10 uppercase font-bold">The Path of Liberation</p>
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(176,38,255,0.8)]">Shiva</h3>
+                 <p className="text-[#b026ff] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Liberation</p>
                </button>
 
              </div>
           </motion.div>
-
         </motion.div>
       </div>
     </div>

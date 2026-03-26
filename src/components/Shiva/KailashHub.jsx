@@ -183,6 +183,7 @@ const FloatingThirdEye = ({ position, scale = 1 }) => {
 // --------------------------------------------------------
 const DivineTrishul = ({ isBurning }) => {
   const trishulRef = useRef();
+  const damaruStringsRef = useRef();
   const damaruRef = useRef();
 
   useFrame((state, delta) => {
@@ -190,68 +191,90 @@ const DivineTrishul = ({ isBurning }) => {
     const time = state.clock.elapsedTime;
 
     if (isBurning) {
-      // Violent vibration during the ritual
       trishulRef.current.position.x = Math.sin(time * 60) * 0.2;
       trishulRef.current.position.z = Math.cos(time * 60) * 0.2;
-      if (damaruRef.current) damaruRef.current.rotation.z += delta * 25; // Drum spins wildly
+      if (damaruStringsRef.current) damaruStringsRef.current.rotation.x += delta * 25; 
+      if (damaruRef.current) damaruRef.current.rotation.x = Math.sin(time * 30) * 0.1; 
     } else {
-      // Majestic, still levitation
       trishulRef.current.position.x = 0;
       trishulRef.current.position.z = 0;
       trishulRef.current.position.y = 55 + Math.sin(time) * 0.8; 
-      if (damaruRef.current) damaruRef.current.rotation.z += delta * 0.5;
+      if (damaruStringsRef.current) damaruStringsRef.current.rotation.x = Math.sin(time * 2) * 1.5;
     }
   });
 
+  const cyanMetal = "#898484"; 
+  const darkWood = "#5c2a11";  
+  const gold = "#fbbf24";      
+
   return (
-    // Scaled up massively for the final cinematic centerpiece
     <group ref={trishulRef} position={[0, 55, 0]} scale={2.5}>
       
-      {/* 1. The Central Staff */}
-      <Cylinder args={[0.15, 0.1, 12, 32]} position={[0, 0, 0]}>
-        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.1} emissive="#fbbf24" emissiveIntensity={0.2}/>
+      {/* --- 1. THE MAIN STAFF --- */}
+      {/* Wooden Handle */}
+      <Cylinder args={[0.20, 0.12, 13, 32]} position={[0, -2, 0]}>
+        <meshStandardMaterial color={darkWood} roughness={0.9} />
       </Cylinder>
       
-      {/* 2. The Center Spear */}
-      <Cone args={[0.3, 3, 32]} position={[0, 7.5, 0]}>
-        <meshStandardMaterial color="#ffffff" metalness={1} roughness={0.1} />
+
+      {/* 🛑 ELONGATED METAL NECK (Connects the Damaru to the higher spears) */}
+      <Cylinder args={[0.20, 0.15, 3, 32]} position={[0, 2.5, 0]}>
+        <meshStandardMaterial color={cyanMetal} metalness={0.8} roughness={0.2} />
+      </Cylinder>
+      
+      {/* --- 2. THE CENTER SPEAR --- */}
+      {/* 🛑 SHIFTED UP to make the trident tall and dominant */}
+      <Cone args={[0.4, 4, 4]} position={[0, 6.5, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, 0]}>
+        <meshStandardMaterial color={cyanMetal} metalness={0.8} roughness={0.2} />
       </Cone>
       
-      {/* 3. The Curved Outer Prongs */}
-      <Torus args={[2.5, 0.15, 16, 50, Math.PI]} position={[0, 4, 0]} rotation={[0, 0, 0]}>
-        <meshStandardMaterial color="#ffffff" metalness={1} roughness={0.1} />
+      {/* --- 3. THE OUTER PRONGS (The 'U' Shape) --- */}
+      {/* 🛑 SHIFTED UP and given a taller vertical scale (1.4) to create a deep 'U' curve */}
+      <Torus args={[1.5, 0.2, 16, 50, Math.PI]} position={[0, 4.5, 0]} rotation={[0, 0, Math.PI]} scale={[1, 1.4, 1]}>
+        <meshStandardMaterial color={cyanMetal} metalness={0.8} roughness={0.2} />
       </Torus>
       
-      {/* Prong Spear Tips */}
-      <Cone args={[0.2, 1.5, 16]} position={[-2.5, 4, 0]} />
-      <Cone args={[0.2, 1.5, 16]} position={[2.5, 4, 0]} />
+      {/* 🛑 Prong Spear Tips (Shifted UP to attach to the new taller U-shape) */}
+      <Cone args={[0.45, 2.6, 4]} position={[-1.6, 6, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, 0.1]}>
+        <meshStandardMaterial color={cyanMetal} metalness={0.8} roughness={0.2} />
+      </Cone>
+      <Cone args={[0.40, 2.6, 4]} position={[1.6, 6, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, -0.1]}>
+        <meshStandardMaterial color={cyanMetal} metalness={0.8} roughness={0.2} />
+      </Cone>
 
-      {/* 4. The Attached Damaru */}
-      <group ref={damaruRef} position={[0, 1.5, 0.8]} rotation={[Math.PI / 2, 0, 0]}>
-        {/* Drum Cones */}
-        <Cone args={[0.8, 1.2, 32]} position={[0, 0.6, 0]}>
-          <meshStandardMaterial color="#5c3a21" metalness={0.1} roughness={0.9} />
+      {/* --- 4. THE HORIZONTAL DAMARU (Unchanged, sits perfectly at the base) --- */}
+      <group ref={damaruRef} position={[0, 1.2, 0.3]}>
+        <Cone args={[0.8, 1.5, 32]} position={[-0.75, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+          <meshStandardMaterial color={darkWood} roughness={0.9} />
         </Cone>
-        <Cone args={[0.8, 1.2, 32]} position={[0, -0.6, 0]} rotation={[Math.PI, 0, 0]}>
-          <meshStandardMaterial color="#5c3a21" metalness={0.1} roughness={0.9} />
+        <Cone args={[0.8, 1.5, 32]} position={[0.75, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <meshStandardMaterial color={darkWood} roughness={0.9} />
         </Cone>
-        {/* Golden Ring */}
-        <Torus args={[0.2, 0.05, 16, 32]} position={[0, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
-          <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
+
+        <Torus args={[0.8, 0.08, 16, 32]} position={[-1.5, 0, 0]} rotation={[0, Math.PI/2, 0]}>
+          <meshStandardMaterial color={gold} metalness={0.8} roughness={0.2} />
         </Torus>
-        {/* Strings & Striking Beads */}
-        <Cylinder args={[0.02, 0.02, 1.8, 8]} position={[-1.2, 0, 0]} rotation={[0, 0, Math.PI/2]}>
-           <meshBasicMaterial color="#ffffff" />
-        </Cylinder>
-        <Cylinder args={[0.02, 0.02, 1.8, 8]} position={[1.2, 0, 0]} rotation={[0, 0, Math.PI/2]}>
-           <meshBasicMaterial color="#ffffff" />
-        </Cylinder>
-        <Sphere args={[0.15, 16, 16]} position={[-2.1, 0, 0]}>
-          <meshStandardMaterial color="#fbbf24" />
-        </Sphere>
-        <Sphere args={[0.15, 16, 16]} position={[2.1, 0, 0]}>
-          <meshStandardMaterial color="#fbbf24" />
-        </Sphere>
+        <Torus args={[0.8, 0.08, 16, 32]} position={[1.5, 0, 0]} rotation={[0, Math.PI/2, 0]}>
+          <meshStandardMaterial color={gold} metalness={0.8} roughness={0.2} />
+        </Torus>
+        <Torus args={[0.2, 0.08, 16, 32]} position={[0, 0, 0]} rotation={[0, Math.PI/2, 0]}>
+          <meshStandardMaterial color={gold} metalness={0.8} roughness={0.2} />
+        </Torus>
+
+        <group ref={damaruStringsRef}>
+          <Cylinder args={[0.015, 0.015, 1.8, 8]} position={[0, 0.9, 0]}>
+             <meshBasicMaterial color="#ffffff" opacity={0.6} transparent />
+          </Cylinder>
+          <Sphere args={[0.15, 16, 16]} position={[0, 1.8, 0]}>
+            <meshStandardMaterial color={gold} />
+          </Sphere>
+          <Cylinder args={[0.015, 0.015, 1.8, 8]} position={[0, -0.9, 0]}>
+             <meshBasicMaterial color="#ffffff" opacity={0.6} transparent />
+          </Cylinder>
+          <Sphere args={[0.15, 16, 16]} position={[0, -1.8, 0]}>
+            <meshStandardMaterial color={gold} />
+          </Sphere>
+        </group>
       </group>
     </group>
   );
@@ -387,7 +410,9 @@ export default function KailashHub({ onBack }) {
 
   // 🦅 MASTER SCROLL MATH (8000vh Cinematic Flight)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const sp = useSpring(scrollYProgress, { stiffness: 100, damping: 40, mass: 0.5 });
+  // 🛑 OLD: const sp = useSpring(scrollYProgress, { stiffness: 100, damping: 40, mass: 0.5 });
+  // ✅ NEW: Lightning fast, buttery response
+  const sp = useSpring(scrollYProgress, { stiffness: 400, damping: 90, mass: 0.1 });
 
   const getWaypoints = (start, end) => {
     const o = useTransform(sp, [start - 0.05, start, end, end + 0.05], [0, 1, 1, 0]);
@@ -407,7 +432,7 @@ export default function KailashHub({ onBack }) {
   const altarX = useTransform(sp, [0.95, 1], ["10vw", "0vw"]);
 
   return (
-    <div ref={containerRef} className={`relative w-full h-[8000vh] font-sans overflow-x-hidden selection:bg-[#00ccff]/50 transition-colors duration-1000 ${isBurning && !isDestroyed ? 'bg-[#050011] animate-[shake_0.1s_ease-in-out_infinite]' : 'bg-[#023e8a]'}`}>
+    <div ref={containerRef} className={`relative w-full h-[4000vh] font-sans overflow-x-hidden selection:bg-[#00ccff]/50 transition-colors duration-1000 ${isBurning && !isDestroyed ? 'bg-[#050011] animate-[shake_0.1s_ease-in-out_infinite]' : 'bg-[#023e8a]'}`}>
       
       {/* 🧭 NAVIGATION */}
       <button onClick={onBack} className="fixed top-6 left-6 z-[100] px-6 py-2 border border-white/40 bg-black/40 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all backdrop-blur-xl cursor-pointer text-white shadow-lg">
