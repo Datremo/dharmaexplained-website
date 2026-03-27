@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial, Torus, Cylinder, Cone, Sphere } from '@react-three/drei';
+import { Points, PointMaterial, Torus, TorusKnot,Cylinder, Cone, Sphere,Sparkles } from '@react-three/drei';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform, useVelocity, useMotionValue } from 'framer-motion';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -34,17 +34,15 @@ function generateNebulaClouds(numPoints, width, height, depth) {
   return { positions };
 }
 
-// 👇 EXACT COPY-PASTE FROM YOUR UPLOAD 👇
 // ==========================================
-// 🔱 THE SCROLL-DRIVEN 3D WEAPONS (Perfectly Centered for Mobile!)
+// 🔱 UPGRADED: SHIVA'S TRISHUL (Pure Red Energy)
 // ==========================================
-
 const AbstractTrishul = ({ smoothScroll, isWarping }) => {
   const groupRef = useRef();
   const t = useRef(0);
   
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const targetScale = isMobile ? 0.45 : 0.9; 
+  const targetScale = isMobile ? 0.35 : 0.7; // Slightly scaled down to fit the new taller geometry
 
   useFrame((state, delta) => {
     t.current += delta;
@@ -72,66 +70,168 @@ const AbstractTrishul = ({ smoothScroll, isWarping }) => {
     groupRef.current.rotation.z = Math.sin(t.current) * 0.1;
   });
 
+  const fireMaterial = <meshStandardMaterial color="#ff1100" emissive="#ff3300" emissiveIntensity={3} roughness={0.2} metalness={0.8} />;
+
   return (
     <group ref={groupRef} scale={[targetScale, targetScale, targetScale]}>
-      <Cylinder args={[0.05, 0.05, 4]} position={[0, -1, 0]}><meshStandardMaterial color="#ff1100" emissive="#cc0000" emissiveIntensity={2} /></Cylinder>
-      <Cylinder args={[0.08, 0.01, 1.5]} position={[0, 1.5, 0]}><meshStandardMaterial color="#ff1100" emissive="#ff4400" emissiveIntensity={3} /></Cylinder>
-      <Cylinder args={[0.04, 0.01, 1.2]} position={[-0.4, 1.2, 0]} rotation={[0, 0, 0.4]}><meshStandardMaterial color="#ff1100" emissive="#ff4400" emissiveIntensity={2} /></Cylinder>
-      <Cylinder args={[0.04, 0.01, 1.2]} position={[0.4, 1.2, 0]} rotation={[0, 0, -0.4]}><meshStandardMaterial color="#ff1100" emissive="#ff4400" emissiveIntensity={2} /></Cylinder>
-      <pointLight color="#ff3300" distance={15} intensity={isWarping ? 50 : 5} />
+      {/* Central Staff */}
+      <Cylinder args={[0.1, 0.05, 8, 32]} position={[0, -2, 0]}>{fireMaterial}</Cylinder>
+      {/* The Center Spear (Flattened Diamond) */}
+      <Cone args={[0.5, 4, 4]} position={[0, 3.5, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, 0]}>{fireMaterial}</Cone>
+      {/* The U-Shape Prongs */}
+      <Torus args={[1.8, 0.15, 16, 50, Math.PI]} position={[0, 1.5, 0]} rotation={[0, 0, Math.PI]} scale={[1, 1.5, 1]}>{fireMaterial}</Torus>
+      {/* Side Spear Tips */}
+      <Cone args={[0.2, 2, 4]} position={[-1.8, 3.5, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, 0.1]}>{fireMaterial}</Cone>
+      <Cone args={[0.2, 2, 4]} position={[1.8, 3.5, 0]} scale={[1, 1, 0.2]} rotation={[0, Math.PI/4, -0.1]}>{fireMaterial}</Cone>
+      
+      {/* Energy Rings around the staff */}
+      <Torus args={[0.4, 0.05, 16, 32]} position={[0, 0.5, 0]} rotation={[Math.PI/2, 0, 0]}>{fireMaterial}</Torus>
+      <Torus args={[0.4, 0.05, 16, 32]} position={[0, -0.5, 0]} rotation={[Math.PI/2, 0, 0]}>{fireMaterial}</Torus>
+
+      <pointLight color="#ff1100" distance={20} intensity={isWarping ? 80 : 10} />
     </group>
   );
 };
 
+// ========================================================
+// 🥏 HYPER-DETAILED SUDARSHANA CHAKRA (Pure Gold & Neon Core)
+// ==========================================
 const AbstractChakra = ({ smoothScroll, isWarping }) => {
   const groupRef = useRef();
+  const innerMandalaRef = useRef();
+  const bladeRingRef = useRef();
   const t = useRef(0);
   
+  // ✨ FIX: Reduced mobile scale significantly to prevent the bloom blowout!
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const targetScale = isMobile ? 0.4 : 0.8; 
-  
+  const targetScale = isMobile ? 0.22 : 0.65; 
+
   useFrame((state, delta) => {
     t.current += delta;
     if (!groupRef.current) return;
     const scroll = smoothScroll.get();
     
     if (isWarping) {
-      groupRef.current.rotation.z -= delta * 30; 
+      // Violent, hyper-fast spin for warp
+      groupRef.current.rotation.z -= delta * 35; 
+      if (bladeRingRef.current) bladeRingRef.current.rotation.z += delta * 50; 
+      if (innerMandalaRef.current) innerMandalaRef.current.rotation.z -= delta * 20;
       state.camera.position.lerp(new THREE.Vector3(groupRef.current.position.x, groupRef.current.position.y, 0), delta * 2);
       return;
     }
     
     let targetX = 0; 
-    let targetY = isMobile ? 0.2 : 1.2; 
+    let targetY = isMobile ? 0.4 : 1.2; // Adjusted mobile Y so it sits prettier on screen
     if (scroll > 0.75) {
       const p = (scroll - 0.75) * 4; 
       targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : -3.5, p); 
-      targetY = THREE.MathUtils.lerp(isMobile ? 0.2 : 1.2, isMobile ? 0.2 : 0, p);  
+      targetY = THREE.MathUtils.lerp(isMobile ? 0.4 : 1.2, isMobile ? 0.2 : 0, p);  
     }
     
     groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, delta * 5);
     groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 5);
     groupRef.current.position.z = THREE.MathUtils.lerp(5, 0, Math.min(scroll * 5, 1)); 
+    
+    // Deep, majestic tilt and spin
     groupRef.current.rotation.z -= delta * (2 + scroll * 10); 
-    groupRef.current.rotation.x = Math.PI / 2 + (scroll * Math.PI / 4); 
+    groupRef.current.rotation.x = Math.PI / 2.2 + (scroll * Math.PI / 4); 
+
+    // Complex clockwork contra-rotation for the inner details
+    if (innerMandalaRef.current) innerMandalaRef.current.rotation.z += delta * (1.5 + scroll * 8);
   });
+
+  // ✨ ALCHEMY: Swapped to Standard Emissive Materials so it NEVER looks black! ✨
+  const pureGold = (
+    <meshStandardMaterial 
+      color="#FFDF00" 
+      metalness={0.6} 
+      roughness={0.2} 
+      emissive="#FFB800" 
+      emissiveIntensity={0.5} // Gives it an inner radiance without needing external lights
+    />
+  );
+  
+  const antiqueGold = (
+    <meshStandardMaterial 
+      color="#D4AF37" 
+      metalness={0.8} 
+      roughness={0.4} 
+      emissive="#996515" 
+      emissiveIntensity={0.3} 
+    />
+  );
+
+  // ✨ FIX: Drastically lowered mobile emissive intensity to save our eyes! ✨
+  const glowingCore = (
+    <meshStandardMaterial 
+      color="#FFFFCC" 
+      emissive="#FFEA00" 
+      emissiveIntensity={isMobile ? 2.5 : 6} // Adapts dynamically!
+      toneMapped={false} 
+    />
+  );
 
   return (
     <group ref={groupRef} scale={[targetScale, targetScale, targetScale]}>
-      {/* 🔥 FIX: Lowered emissive intensities from 3 to 1.5! */}
-      <Torus args={[1, 0.1, 16, 100]}><meshStandardMaterial color="#00ccff" emissive="#0088ff" emissiveIntensity={1.5} /></Torus>
-      <Torus args={[0.2, 0.05, 16, 100]}><meshStandardMaterial color="#00ccff" emissive="#0088ff" emissiveIntensity={1} /></Torus>
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <Cylinder key={i} args={[0.01, 0.1, 2.2]} rotation={[0, 0, (Math.PI / 4) * i]}>
-          <meshStandardMaterial color="#00ccff" emissive="#00ccff" emissiveIntensity={1} />
-        </Cylinder>
-      ))}
-      {/* 🔥 FIX: Lowered the base pointLight intensity so it doesn't blow out the center! */}
-      <pointLight color="#00ccff" distance={15} intensity={isWarping ? 30 : 2} />
+      
+      {/* --- 1. THE DIVINE CORE --- */}
+      <Sphere args={[0.6, 32, 32]} position={[0, 0, 0.15]} scale={[1, 1, 0.5]}>
+        {glowingCore}
+      </Sphere>
+      {/* Center cap rings */}
+      <Torus args={[0.8, 0.08, 32, 64]} position={[0, 0, 0.1]}>{pureGold}</Torus>
+      <Torus args={[0.55, 0.04, 16, 64]} position={[0, 0, 0.05]}>{antiqueGold}</Torus>
+
+      {/* --- 2. THE INTRICATE MANDALA --- */}
+      <group ref={innerMandalaRef} position={[0, 0, 0]}>
+        <TorusKnot args={[0.9, 0.1, 128, 16, 3, 8]} scale={[1, 1, 0.1]}>
+          {pureGold}
+        </TorusKnot>
+        <TorusKnot args={[1.3, 0.08, 128, 16, 5, 12]} scale={[1, 1, 0.08]} rotation={[0, 0, Math.PI / 4]}>
+          {antiqueGold}
+        </TorusKnot>
+      </group>
+
+      {/* --- 3. THE HEAVY BRONZE/GOLD RIMS --- */}
+      {/* Added emissive to the backing plate so the center is never dark! */}
+      <Cylinder args={[1.8, 1.8, 0.1, 64]} rotation={[Math.PI / 2, 0, 0]}>
+        <meshStandardMaterial color="#FFB300" metalness={0.5} roughness={0.6} emissive="#8B6508" emissiveIntensity={0.2} />
+      </Cylinder>
+      {/* Stepped outer rings */}
+      <Torus args={[1.7, 0.15, 32, 100]} position={[0, 0, 0.08]}>{pureGold}</Torus>
+      <Torus args={[1.9, 0.05, 16, 100]} position={[0, 0, 0.05]}>{antiqueGold}</Torus>
+
+      {/* --- 4. THE ASTOUNDING SAWTOOTH BLADES (72 precise edges) --- */}
+      <group ref={bladeRingRef}>
+        {Array.from({ length: 72 }).map((_, i) => (
+          <group key={`blade-${i}`} rotation={[0, 0, (Math.PI / 36) * i]}>
+            <Cone 
+              args={[0.08, 0.6, 3]} 
+              position={[0, 2.05, 0]} 
+              scale={[1, 1, 0.1]} 
+              rotation={[0, 0, -0.3]} 
+            >
+              {pureGold}
+            </Cone>
+            <Sphere args={[0.06, 8, 8]} position={[0, 1.85, 0]} scale={[1, 1, 0.2]}>
+              {antiqueGold}
+            </Sphere>
+          </group>
+        ))}
+      </group>
+
+      {/* --- 5. DYNAMIC LIGHTING --- */}
+      {/* ✨ Front-facing lights to wash the entire weapon in a gorgeous golden glow! ✨ */}
+      <pointLight color="#FFEA00" distance={8} intensity={isMobile ? 2 : 4} position={[0, 0, 1.5]} /> 
+      <pointLight color="#FFDF00" distance={20} intensity={isWarping ? 30 : 6} position={[0, 0, 3]} /> 
+      
     </group>
   );
 };
 
+// ==========================================
+// 🌸 UPGRADED: BRAHMA'S LOTUS (Layered Golden Petals)
+// ==========================================
 const AbstractLotus = ({ smoothScroll, isWarping }) => {
   const groupRef = useRef();
   const t = useRef(0);
@@ -146,7 +246,10 @@ const AbstractLotus = ({ smoothScroll, isWarping }) => {
     
     if (isWarping) {
       groupRef.current.rotation.y += delta * 15;
-      groupRef.current.children.forEach((petal, i) => { if (i > 0) petal.rotation.x += delta * 2; }); 
+      // Petals close up tight during warp!
+      groupRef.current.children.forEach((layer, index) => {
+        if (layer.name === "petalLayer") layer.children.forEach(petal => petal.rotation.x += delta * 3); 
+      }); 
       state.camera.position.lerp(new THREE.Vector3(groupRef.current.position.x, groupRef.current.position.y, 0), delta * 2);
       return;
     }
@@ -163,22 +266,48 @@ const AbstractLotus = ({ smoothScroll, isWarping }) => {
     groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 5);
     groupRef.current.position.z = THREE.MathUtils.lerp(5, 0, Math.min(scroll * 5, 1)); 
     groupRef.current.rotation.y += delta * (0.5 + scroll); 
-    groupRef.current.children.forEach((petal, i) => {
-      if (i > 0) petal.rotation.x = THREE.MathUtils.lerp(0.1, 1.4, scroll); 
+    
+    // Smoothly "Bloom" the lotus based on scroll depth
+    const bloomAmount = THREE.MathUtils.lerp(0.2, 1.2, scroll);
+    groupRef.current.children.forEach((layer) => {
+      if (layer.name === "petalLayerOuter") layer.children.forEach(petal => petal.rotation.x = bloomAmount * 1.2);
+      if (layer.name === "petalLayerInner") layer.children.forEach(petal => petal.rotation.x = bloomAmount * 0.7);
     });
   });
 
+  const goldMaterial = <meshStandardMaterial color="#E65DCF" emissive="#F030C9" emissiveIntensity={2} roughness={0.3} metalness={0.8} />;
+  const coreMaterial = <meshStandardMaterial color="#ffffff" emissive="#FFFFFF" emissiveIntensity={8} />;
+
   return (
     <group ref={groupRef} scale={[targetScale, targetScale, targetScale]}>
-      <pointLight color="#ffaa00" distance={15} intensity={isWarping ? 50 : 5} />
-      <Sphere args={[0.3, 32, 32]}><meshStandardMaterial color="#ffaa00" emissive="#ffaa00" emissiveIntensity={3} /></Sphere>
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <group key={i} rotation={[0, (Math.PI / 4) * i, 0]}>
-          <Cone args={[0.4, 2, 16]} position={[0, 0.5, 0.5]} rotation={[0.5, 0, 0]}>
-            <meshStandardMaterial color="#ffaa00" emissive="#cc7700" emissiveIntensity={2} wireframe={true} />
-          </Cone>
-        </group>
-      ))}
+      {/* Glowing Receptacle (Core) */}
+      <Sphere args={[0.6, 32, 32]}>{coreMaterial}</Sphere>
+      <Torus args={[0.8, 0.05, 16, 50]} rotation={[Math.PI/2, 0, 0]}>{goldMaterial}</Torus>
+      
+      {/* Outer Layer of Petals */}
+      <group name="petalLayerOuter">
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <group key={`outer-${i}`} rotation={[0, (Math.PI / 4) * i, 0]}>
+            {/* Flattened Cone to look like a beautiful teardrop petal */}
+            <Cone args={[0.8, 3.5, 32]} position={[0, 0.5, 1.5]} scale={[1, 1, 0.1]} rotation={[1.2, 0, 0]}>
+              {goldMaterial}
+            </Cone>
+          </group>
+        ))}
+      </group>
+
+      {/* Inner Layer of Petals (Offset rotation so they interleave) */}
+      <group name="petalLayerInner">
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <group key={`inner-${i}`} rotation={[0, (Math.PI / 4) * i + (Math.PI / 8), 0]}>
+            <Cone args={[0.6, 2.5, 32]} position={[0, 0.5, 1]} scale={[1, 1, 0.15]} rotation={[0.6, 0, 0]}>
+              <meshStandardMaterial color="#E56CC3" emissive="#ED5CBF" emissiveIntensity={1} roughness={0.2} metalness={0.5} />
+            </Cone>
+          </group>
+        ))}
+      </group>
+
+      <pointLight color="#FFFFFF" distance={20} intensity={isWarping ? 80 : 10} />
     </group>
   );
 };
@@ -235,7 +364,7 @@ const LoreCard = ({ mod, themeColor, glowBorder, isShiva, isVishnu, scrollVeloci
          <h2 className="text-white text-2xl md:text-3xl font-serif uppercase tracking-widest mb-4 drop-shadow-lg">
            {mod.title}
          </h2>
-         <div className={`w-8 h-1 mb-4 ${isShiva ? 'bg-[#ff1100]' : isVishnu ? 'bg-[#00ccff]' : 'bg-[#ffaa00]'}`} />
+         <div className={`w-8 h-1 mb-4 ${isShiva ? 'bg-[#ff1100]' : isVishnu ? 'bg-[#ffaa00]' : 'bg-[#FFFFFF]'}`} />
          <p className="text-white/80 text-sm md:text-base leading-relaxed font-light drop-shadow-md">
            {mod.desc}
          </p>
@@ -281,8 +410,8 @@ export default function WeaponShowcase({ guide, onBack, onEnterHub }) {
   const isShiva = guide === 'shiva';
   const isVishnu = guide === 'vishnu';
   
-  const themeColor = isShiva ? 'text-[#ff1100]' : isVishnu ? 'text-[#00ccff]' : 'text-[#ffaa00]';
-  const glowBorder = isShiva ? 'border-[#ff1100]/30' : isVishnu ? 'border-[#00ccff]/30' : 'border-[#ffaa00]/30';
+  const themeColor = isShiva ? 'text-[#ff1100]' : isVishnu ? 'text-[#ffaa00]' : 'text-[#FFFFFF]';
+  const glowBorder = isShiva ? 'border-[#ff1100]/30' : isVishnu ? 'border-[#ffaa00]/30' : 'border-[#FFFFFF]/30';
   const deityName = isShiva ? 'Shiva' : isVishnu ? 'Vishnu' : 'Brahma';
   const guideTitle = isShiva ? 'The Destroyer' : isVishnu ? 'The Preserver' : 'The Creator';
   const modules = DEITY_MODULES[guide];
@@ -341,7 +470,7 @@ export default function WeaponShowcase({ guide, onBack, onEnterHub }) {
             {!isShiva && !isVishnu && <AbstractLotus smoothScroll={smoothScroll} isWarping={isWarping} />}
             
             <Points positions={generateNebulaClouds(5000, 20, 20, 20).positions} stride={3}>
-              <PointMaterial transparent size={0.02} color={isShiva ? "#ff1100" : isVishnu ? "#00ccff" : "#ffaa00"} opacity={0.3} />
+              <PointMaterial transparent size={0.02} color={isShiva ? "#ff1100" : isVishnu ? "#ffaa00" : "#FFFFFF"} opacity={0.3} />
             </Points>
           </Canvas>
         </div>

@@ -9,6 +9,8 @@ import GlobalAudio from './components/GlobalAudio';
 // ✨ IMPORT THE NEW LOBBY ✨
 import RandomRealisations from './components/RandomRealisations'; 
 import EmergencyOverride from './components/EmergencyOverride';
+import DharmavarshHub from './components/Shiva/DharmavarshHub';
+import TandavaFlow from './components/Shiva/TandavaFlow';
 
 export default function App() {
   const [view, setView] = useState('intro');
@@ -91,9 +93,28 @@ return (
 
       {/* 🏔️ SHIVA'S HUB */}
       {view === 'hub' && guide === 'shiva' && (
-        <KailashHub onBack={() => setView('showcase')} />
+        <KailashHub 
+          onBack={() => setView('showcase')} 
+           onEnterDharmavarsh={() => setView('dharmavarsh_hub')} 
+        />
       )}
+    
 
+      {/* 🌌 THE NEW DHARMAVARSH HUB ROUTE */}
+      {view === 'dharmavarsh_hub' && (
+        <DharmavarshHub 
+          onBack={() => setView('hub')} 
+          
+          /* We will build these 3 zones next! For now, they just log to the console. */
+          onSelectDhyan={() => console.log("Teleporting to Dhyan...")}
+          onSelectTandav={() => setView('tandava')}
+          onSelectEmbers={() => console.log("Teleporting to Ashram of Embers...")}
+        />
+        
+      )}
+      {view === 'tandava' && (
+        <TandavaFlow onBack={() => setView('dharmavarsh_hub')} />
+      )}
       {/* 🌌 RENDER THE VAULT WHEN ACTIVE */}
       {view === 'realisations' && (
         <RandomRealisations onBackToHub={handleBackToSelection} />

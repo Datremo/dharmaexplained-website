@@ -374,8 +374,8 @@ const AltitudeHUD = ({ scrollProgress }) => {
 // --------------------------------------------------------
 // 🎬 THE MAIN LOBBY: THE DHARMAVARSH TITAN
 // --------------------------------------------------------
-export default function KailashHub({ onBack }) {
-  const containerRef = useRef(null);
+
+export default function KailashHub({ onBack, onEnterDharmavarsh }) {  const containerRef = useRef(null);
   const [dpr, setDpr] = useState(1);
   const [tier, setTier] = useState('high');
   
@@ -438,7 +438,7 @@ export default function KailashHub({ onBack }) {
       <button onClick={onBack} className="fixed top-6 left-6 z-[100] px-6 py-2 border border-white/40 bg-black/40 rounded-full text-[10px] md:text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all backdrop-blur-xl cursor-pointer text-white shadow-lg">
         ← Leave Kailash
       </button>
-
+ 
       {/* ☀️ DEEP STRATOSPHERE SKY GRADIENT (High Contrast for the Mountain) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className={`absolute inset-0 transition-opacity duration-1000 ${isBurning ? 'opacity-0' : 'opacity-100'} bg-gradient-to-b from-[#012a5e] via-[#023e8a] to-[#4facfe]`} />
@@ -610,8 +610,9 @@ export default function KailashHub({ onBack }) {
                   Maya is shattered. The Void Welcomes You.
                 </p>
                 
+                {/* 🛑 CHANGED: Now triggers the prop instead of just resetting! */}
                 <button 
-                  onClick={handleReset}
+                  onClick={onEnterDharmavarsh} 
                   className="mt-16 px-10 py-4 border border-[#00ccff]/50 text-[#00ccff] text-xs md:text-sm tracking-[0.4em] uppercase hover:bg-[#00ccff] hover:text-[#000511] transition-all shadow-[0_0_20px_rgba(0,204,255,0.2)] hover:shadow-[0_0_40px_rgba(0,204,255,0.6)]"
                 >
                   Enter Dharmavarsh

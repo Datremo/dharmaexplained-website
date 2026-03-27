@@ -186,22 +186,22 @@ useEffect(() => {
              {/* The grid is tighter and cards are shorter on mobile */}
              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 w-full max-w-xs md:max-w-full mx-auto">
                
-               <button onClick={() => onUnlock('brahma')} className="group relative w-full h-20 md:h-56 border border-[#ff3366]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#ff3366] hover:shadow-[0_0_40px_rgba(255,51,102,0.3)] transition-all duration-500 cursor-pointer">
-                 <div className="absolute inset-0 bg-gradient-to-t from-[#ff3366]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(255,51,102,0.8)]">Brahma</h3>
-                 <p className="text-[#ff3366] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Creation</p>
+               <button onClick={() => onUnlock('brahma')} className="group relative w-full h-20 md:h-56 border border-[#FFFFFF]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#ff3366] hover:shadow-[0_0_40px_rgba(255,51,102,0.3)] transition-all duration-500 cursor-pointer">
+                 <div className="absolute inset-0 bg-gradient-to-t from-[#FFFFFF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(255, 255, 255, 0.8)]">Brahma</h3>
+                 <p className="text-[#FFFFFF] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Creation</p>
                </button>
 
-               <button onClick={() => onUnlock('vishnu')} className="group relative w-full h-20 md:h-56 border border-[#00ccff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#00ccff] hover:shadow-[0_0_40px_rgba(0,204,255,0.3)] transition-all duration-500 cursor-pointer">
-                 <div className="absolute inset-0 bg-gradient-to-t from-[#00ccff]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(0,204,255,0.8)]">Vishnu</h3>
-                 <p className="text-[#00ccff] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Preservation</p>
+               <button onClick={() => onUnlock('vishnu')} className="group relative w-full h-20 md:h-56 border border-[#FFB300]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#00ccff] hover:shadow-[0_0_40px_rgba(0,204,255,0.3)] transition-all duration-500 cursor-pointer">
+                 <div className="absolute inset-0 bg-gradient-to-t from-[#FFB300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(251, 197, 2, 0.8)]">Vishnu</h3>
+                 <p className="text-[#FFB300] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Preservation</p>
                </button>
 
-               <button onClick={() => onUnlock('shiva')} className="group relative w-full h-20 md:h-56 border border-[#b026ff]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#b026ff] hover:shadow-[0_0_40px_rgba(176,38,255,0.3)] transition-all duration-500 cursor-pointer">
-                 <div className="absolute inset-0 bg-gradient-to-t from-[#b026ff]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(176,38,255,0.8)]">Shiva</h3>
-                 <p className="text-[#b026ff] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Liberation</p>
+               <button onClick={() => onUnlock('shiva')} className="group relative w-full h-20 md:h-56 border border-[#FF4E26]/50 bg-black/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center overflow-hidden hover:border-[#b026ff] hover:shadow-[0_0_40px_rgba(176,38,255,0.3)] transition-all duration-500 cursor-pointer">
+                 <div className="absolute inset-0 bg-gradient-to-t from-[#FB390D]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <h3 className="text-white text-lg md:text-2xl font-serif uppercase tracking-widest z-10 drop-shadow-[0_0_10px_rgba(248, 68, 13, 0.8)]">Shiva</h3>
+                 <p className="text-[#ff3366]] text-[8px] md:text-[10px] tracking-[0.3em] mt-1 md:mt-2 z-10 uppercase font-bold">The Path of Liberation</p>
                </button>
 
              </div>
